@@ -1,0 +1,92 @@
+{{- if .installWezterm -}}
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v wezterm &> /dev/null; then
+    echo "Installing wezterm..."
+
+    # Add the official nightly APT repository (stable is too old for Wayland/GNOME)
+    if [ ! -f /usr/share/keyrings/wezterm-fury.gpg ]; then
+        curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+    fi
+
+    echo "deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *" \
+        | sudo tee /etc/apt/sources.list.d/wezterm.list > /dev/null
+
+    sudo apt-get update
+    sudo apt-get install -y wezterm-nightly
+fi
+
+# Upgrade wezterm to nightly if stable version is installed
+if command -v wezterm &> /dev/null && wezterm --version 2>&1 | grep -q '20240203'; then
+    echo "Upgrading wezterm to nightly (stable has Wayland bugs)..."
+    sudo apt-get update
+    sudo apt-get install -y wezterm-nightly
+    sudo apt-get remove -y wezterm 2>/dev/null || true
+fi
+
+# Set wezterm as default terminal emulator
+if command -v update-alternatives &> /dev/null; then
+    current=$(update-alternatives --query x-terminal-emulator 2>/dev/null | grep "^Value:" | awk '{print $2}' || true)
+    if [ "$current" != "$(which wezterm)" ]; then
+        echo "Setting wezterm as default terminal..."
+        sudo update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator "$(which wezterm)" 50
+        sudo update-alternatives --set x-terminal-emulator "$(which wezterm)"
+    else
+        echo "wezterm is already the default terminal."
+    fi
+fi
+
+# Set wezterm as default terminal in GNOME
+if command -v gsettings &> /dev/null && gsettings list-schemas 2>/dev/null | grep -q org.gnome.desktop.default-applications.terminal; then
+    current_gnome=$(gsettings get org.gnome.desktop.default-applications.terminal exec 2>/dev/null || true)
+    if [ "$current_gnome" != "'wezterm'" ]; then
+        echo "Setting wezterm as GNOME default terminal..."
+        gsettings set org.gnome.desktop.default-applications.terminal exec wezterm
+        gsettings set org.gnome.desktop.default-applications.terminal exec-arg ''
+    else
+        echo "wezterm is already the GNOME default terminal."
+    fi
+fi
+
+# Set wezterm as default terminal for xdg-terminal-exec (used by Nautilus 48+)
+if ! command -v xdg-terminal-exec &> /dev/null; then
+    echo "Installing xdg-terminal-exec..."
+    sudo apt-get install -y xdg-terminal-exec
+fi
+mkdir -p ~/.config
+if [ ! -f ~/.config/xdg-terminals.list ] || ! grep -q 'org.wezfurlong.wezterm.desktop' ~/.config/xdg-terminals.list; then
+    echo "Setting wezterm as xdg-terminal-exec default..."
+    echo 'org.wezfurlong.wezterm.desktop' > ~/.config/xdg-terminals.list
+fi
+
+# Add wezterm to GNOME dock favorites
+if command -v gsettings &> /dev/null && gsettings list-schemas 2>/dev/null | grep -q org.gnome.shell; then
+    favorites=$(gsettings get org.gnome.shell favorite-apps)
+    if ! echo "$favorites" | grep -q 'org.wezfurlong.wezterm.desktop'; then
+        echo "Adding wezterm to GNOME dock..."
+        new_favorites=$(echo "$favorites" | sed "s/]/, 'org.wezfurlong.wezterm.desktop']/")
+        gsettings set org.gnome.shell favorite-apps "$new_favorites"
+    else
+        echo "wezterm is already in GNOME dock."
+    fi
+fi
+
+# Bind Ctrl+Alt+T to launch wezterm
+if command -v gsettings &> /dev/null && gsettings list-schemas 2>/dev/null | grep -q org.gnome.settings-daemon.plugins.media-keys; then
+    keybinding_path="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/wezterm/"
+    current=$(gsettings get org.gnome.settings-daemon.plugins.media-keys custom-keybindings)
+    if ! echo "$current" | grep -q "$keybinding_path"; then
+        echo "Adding Ctrl+Alt+T shortcut for wezterm..."
+        if [ "$current" = "@as []" ]; then
+            new="['$keybinding_path']"
+        else
+            new=$(echo "$current" | sed "s|]|, '$keybinding_path']|")
+        fi
+        gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "$new"
+    fi
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:$keybinding_path name 'WezTerm'
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:$keybinding_path command 'wezterm'
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:$keybinding_path binding '<Control><Alt>t'
+fi
+{{- end }}

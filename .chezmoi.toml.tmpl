@@ -1,0 +1,15 @@
+{{- $installZsh := promptBoolOnce . "installZsh" "Install zsh and set as default shell (y/n)" -}}
+{{- $installStarship := promptBoolOnce . "installStarship" "Install starship prompt (y/n)" -}}
+{{- $installSheldon := promptBoolOnce . "installSheldon" "Install sheldon plugin manager for zsh (y/n)" -}}
+{{- $installCliTools := promptBoolOnce . "installCliTools" "Install CLI tools: fzf, eza, bat, fd, ripgrep, zoxide (y/n)" -}}
+{{- $installWezterm := false -}}
+{{- if or (eq (env "XDG_SESSION_TYPE") "wayland") (eq (env "XDG_SESSION_TYPE") "x11") (ne (env "DISPLAY") "") -}}
+{{-   $installWezterm = promptBoolOnce . "installWezterm" "Install wezterm and set as default terminal (y/n)" -}}
+{{- end -}}
+
+[data]
+    installZsh = {{ $installZsh }}
+    installStarship = {{ $installStarship }}
+    installSheldon = {{ $installSheldon }}
+    installCliTools = {{ $installCliTools }}
+    installWezterm = {{ $installWezterm }}

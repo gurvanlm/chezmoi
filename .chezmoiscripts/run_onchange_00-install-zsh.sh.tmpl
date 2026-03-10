@@ -1,0 +1,18 @@
+{{- if .installZsh -}}
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v zsh &> /dev/null; then
+    echo "Installing zsh..."
+    sudo apt-get update
+    sudo apt-get install -y zsh
+fi
+
+if [ "$SHELL" != "$(which zsh)" ]; then
+    echo "Setting zsh as default shell..."
+    sudo chsh -s "$(which zsh)" "{{ .chezmoi.username }}"
+    echo "Default shell changed to zsh. Log out and back in for it to take effect."
+else
+    echo "zsh is already the default shell."
+fi
+{{- end }}

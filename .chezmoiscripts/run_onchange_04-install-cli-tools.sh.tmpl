@@ -1,0 +1,63 @@
+{{- if .installCliTools -}}
+#!/bin/bash
+set -euo pipefail
+
+mkdir -p ~/.local/bin
+
+# Helper: install a binary from a GitHub release tarball
+install_from_github() {
+    local repo="$1" binary="$2" tarball_pattern="$3"
+    if command -v "$binary" &> /dev/null; then
+        echo "$binary is already installed."
+        return
+    fi
+    echo "Installing $binary..."
+    local url
+    url=$(curl -fsSL "https://api.github.com/repos/${repo}/releases/latest" \
+        | grep "browser_download_url.*${tarball_pattern}" | head -1 | cut -d'"' -f4)
+    local tmpdir
+    tmpdir=$(mktemp -d)
+    curl -fsSL "$url" | tar xz -C "$tmpdir"
+    find "$tmpdir" -name "$binary" -type f -exec mv {} ~/.local/bin/ \;
+    chmod +x ~/.local/bin/"$binary"
+    rm -rf "$tmpdir"
+    echo "$binary installed."
+}
+
+# fzf
+install_from_github "junegunn/fzf" "fzf" "linux_amd64.tar.gz"
+
+# ripgrep
+if ! command -v rg &> /dev/null; then
+    echo "Installing ripgrep..."
+    url=$(curl -fsSL "https://api.github.com/repos/BurntSushi/ripgrep/releases/latest" \
+        | grep "browser_download_url.*x86_64-unknown-linux-musl.tar.gz" | head -1 | cut -d'"' -f4)
+    tmpdir=$(mktemp -d)
+    curl -fsSL "$url" | tar xz -C "$tmpdir"
+    find "$tmpdir" -name "rg" -type f -exec mv {} ~/.local/bin/ \;
+    chmod +x ~/.local/bin/rg
+    rm -rf "$tmpdir"
+    echo "ripgrep installed."
+else
+    echo "rg is already installed."
+fi
+
+# bat
+install_from_github "sharkdp/bat" "bat" "x86_64-unknown-linux-musl.tar.gz"
+
+# fd
+install_from_github "sharkdp/fd" "fd" "x86_64-unknown-linux-musl.tar.gz"
+
+# eza
+install_from_github "eza-community/eza" "eza" "x86_64-unknown-linux-musl.tar.gz"
+
+# zoxide
+if ! command -v zoxide &> /dev/null; then
+    echo "Installing zoxide..."
+    curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+else
+    echo "zoxide is already installed."
+fi
+
+echo "All CLI tools installed."
+{{- end }}

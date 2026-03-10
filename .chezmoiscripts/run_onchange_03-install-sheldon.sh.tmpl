@@ -1,0 +1,13 @@
+{{- if .installSheldon -}}
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v sheldon &> /dev/null; then
+    echo "Installing sheldon..."
+    mkdir -p ~/.local/bin
+    curl --proto '=https' -fLsS https://rossmacarthur.github.io/install/crate.sh \
+        | bash -s -- --repo rossmacarthur/sheldon --to ~/.local/bin
+else
+    echo "sheldon is already installed."
+fi
+{{- end }}

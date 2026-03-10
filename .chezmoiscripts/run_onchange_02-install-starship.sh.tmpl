@@ -1,0 +1,12 @@
+{{- if .installStarship -}}
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v starship &> /dev/null; then
+    echo "Installing starship..."
+    mkdir -p ~/.local/bin
+    curl -fsSL https://starship.rs/install.sh | sh -s -- --yes --bin-dir ~/.local/bin
+else
+    echo "starship is already installed."
+fi
+{{- end }}

@@ -1,0 +1,29 @@
+[user]
+    name = Gurvan Le Moigno
+    email = gurvan.lemoigno@edgemind.net
+
+[init]
+    defaultBranch = main
+
+[core]
+    editor = nano
+    pager = bat --plain
+
+[pull]
+    rebase = true
+
+[push]
+    autoSetupRemote = true
+
+[diff]
+    colorMoved = default
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    sw = switch
+    lg = log --oneline --graph --decorate
+    last = log -1 HEAD
+    unstage = restore --staged

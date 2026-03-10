@@ -1,0 +1,66 @@
+# Starship prompt — Tokyo Night theme
+# https://starship.rs/config/
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$python\
+$nodejs\
+$rust\
+$golang\
+$docker_context\
+$cmd_duration\
+$line_break\
+$character"""
+
+# Prompt character
+[character]
+success_symbol = "[❯](bold #7aa2f7)"
+error_symbol = "[❯](bold #f7768e)"
+
+# Directory
+[directory]
+style = "bold #7aa2f7"
+truncation_length = 3
+truncate_to_repo = true
+
+# Git branch
+[git_branch]
+style = "#bb9af7"
+format = "[$symbol$branch]($style) "
+
+# Git status
+[git_status]
+style = "#e0af68"
+modified = "!"
+untracked = "?"
+staged = "+"
+deleted = "✘"
+
+# Command duration (show if > 3s)
+[cmd_duration]
+min_time = 3000
+style = "#565f89"
+format = "[$duration]($style) "
+
+# Languages — subtle, only when relevant
+[python]
+style = "#e0af68"
+format = "[$symbol$version]($style) "
+
+[nodejs]
+style = "#9ece6a"
+format = "[$symbol$version]($style) "
+
+[rust]
+style = "#f7768e"
+format = "[$symbol$version]($style) "
+
+[golang]
+style = "#7dcfff"
+format = "[$symbol$version]($style) "
+
+[docker_context]
+style = "#7aa2f7"
+format = "[$symbol$context]($style) "
