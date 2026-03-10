@@ -59,5 +59,22 @@ else
     echo "zoxide is already installed."
 fi
 
+# yazi (zip, not tarball)
+if ! command -v yazi &> /dev/null; then
+    echo "Installing yazi..."
+    url=$(curl -fsSL "https://api.github.com/repos/sxyazi/yazi/releases/latest" \
+        | grep "browser_download_url.*x86_64-unknown-linux-musl.zip" | grep -v ".deb" | head -1 | cut -d'"' -f4)
+    tmpdir=$(mktemp -d)
+    curl -fsSL "$url" -o "$tmpdir/yazi.zip"
+    unzip -q "$tmpdir/yazi.zip" -d "$tmpdir"
+    find "$tmpdir" -name "yazi" -type f -exec mv {} ~/.local/bin/ \;
+    find "$tmpdir" -name "ya" -type f -exec mv {} ~/.local/bin/ \;
+    chmod +x ~/.local/bin/yazi ~/.local/bin/ya
+    rm -rf "$tmpdir"
+    echo "yazi installed."
+else
+    echo "yazi is already installed."
+fi
+
 echo "All CLI tools installed."
 {{- end }}
