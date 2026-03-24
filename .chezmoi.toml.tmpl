@@ -2,11 +2,16 @@
 {{- $installStarship := promptBoolOnce . "installStarship" "Install starship prompt (y/n)" -}}
 {{- $installSheldon := promptBoolOnce . "installSheldon" "Install sheldon plugin manager for zsh (y/n)" -}}
 {{- $installCliTools := promptBoolOnce . "installCliTools" "Install CLI tools: fzf, eza, bat, fd, ripgrep, zoxide (y/n)" -}}
+{{- $installDocker := promptBoolOnce . "installDocker" "Install Docker Engine + Compose (y/n)" -}}
 {{- $nexusUser := promptStringOnce . "nexusUser" "Nexus username (leave empty to skip)" -}}
 {{- $nexusPassword := promptStringOnce . "nexusPassword" "Nexus password" -}}
 {{- $installWezterm := false -}}
+{{- $installVscode := false -}}
+{{- $installObsidian := false -}}
 {{- if or (eq (env "XDG_SESSION_TYPE") "wayland") (eq (env "XDG_SESSION_TYPE") "x11") (ne (env "DISPLAY") "") -}}
 {{-   $installWezterm = promptBoolOnce . "installWezterm" "Install wezterm and set as default terminal (y/n)" -}}
+{{-   $installVscode = promptBoolOnce . "installVscode" "Install VS Code (y/n)" -}}
+{{-   $installObsidian = promptBoolOnce . "installObsidian" "Install Obsidian (y/n)" -}}
 {{-   $installEclipse = promptBoolOnce . "installEclipse" "Install Eclipse IDE for RCP/RAP developers (y/n)" -}}
 {{- end -}}
 
@@ -15,8 +20,11 @@
     installStarship = {{ $installStarship }}
     installSheldon = {{ $installSheldon }}
     installCliTools = {{ $installCliTools }}
+    installDocker = {{ $installDocker }}
     installSdkman = {{ $installSdkman }}
     nexusUser = {{ $nexusUser | quote }}
     nexusPassword = {{ $nexusPassword | quote }}
     installWezterm = {{ $installWezterm }}
+    installVscode = {{ $installVscode }}
+    installObsidian = {{ $installObsidian }}
     installEclipse = {{ $installEclipse }}

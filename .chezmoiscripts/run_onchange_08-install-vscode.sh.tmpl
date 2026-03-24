@@ -1,0 +1,29 @@
+{{- if .installVscode -}}
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v code &> /dev/null; then
+    echo "Installing VS Code..."
+
+    sudo apt-get update -qq
+    sudo apt-get install -y ca-certificates curl gnupg
+
+    # Add Microsoft GPG key
+    if [ ! -f /usr/share/keyrings/microsoft-archive-keyring.gpg ]; then
+        curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+            | sudo gpg --yes --dearmor -o /usr/share/keyrings/microsoft-archive-keyring.gpg
+    fi
+
+    # Set up the repository
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/code stable main" \
+        | sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
+
+    # Install VS Code
+    sudo apt-get update -qq
+    sudo apt-get install -y code
+
+    echo "VS Code installed."
+else
+    echo "VS Code is already installed."
+fi
+{{- end }}

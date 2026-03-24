@@ -1,0 +1,53 @@
+{{- if .installObsidian -}}
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v obsidian &> /dev/null && ! dpkg -s obsidian &> /dev/null; then
+    echo "Installing Obsidian..."
+
+    # Get latest .deb URL from GitHub releases
+    url=$(curl -fsSL "https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest" \
+        | grep "browser_download_url.*amd64.deb" | head -1 | cut -d'"' -f4)
+
+    tmpdir=$(mktemp -d --tmpdir=/tmp)
+    curl -fsSL "$url" -o "$tmpdir/obsidian.deb"
+    chmod 644 "$tmpdir/obsidian.deb"
+    sudo apt-get install -y "$tmpdir/obsidian.deb"
+    rm -rf "$tmpdir"
+
+    echo "Obsidian installed."
+else
+    echo "Obsidian is already installed."
+fi
+
+# Clone vault if not present
+VAULT_DIR="$HOME/brain"
+if [ ! -d "$VAULT_DIR" ]; then
+    echo "Cloning Obsidian vault..."
+    git clone git@github.com:gurvanlm/Brain.git "$VAULT_DIR"
+    echo "Vault cloned to $VAULT_DIR"
+else
+    echo "Vault already exists at $VAULT_DIR"
+fi
+
+# Register vault in Obsidian config
+OBSIDIAN_CONFIG="$HOME/.config/obsidian/obsidian.json"
+if [ ! -f "$OBSIDIAN_CONFIG" ]; then
+    echo "Registering vault in Obsidian..."
+    mkdir -p "$(dirname "$OBSIDIAN_CONFIG")"
+    cat > "$OBSIDIAN_CONFIG" <<EOF
+{
+  "vaults": {
+    "$(od -An -tx1 -N16 /dev/urandom | tr -d ' \n')": {
+      "path": "$VAULT_DIR",
+      "ts": $(date +%s)000,
+      "open": true
+    }
+  }
+}
+EOF
+    echo "Vault registered."
+else
+    echo "Obsidian config already exists."
+fi
+{{- end }}

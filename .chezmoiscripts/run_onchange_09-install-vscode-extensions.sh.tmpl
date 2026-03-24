@@ -1,0 +1,29 @@
+{{- if .installVscode -}}
+#!/bin/bash
+set -eo pipefail
+
+# Extensions list
+# hash: 1
+extensions=(
+    enkia.tokyo-night
+    Vue.volar
+    redhat.java
+    vscjava.vscode-java-debug
+    vscjava.vscode-maven
+    mechatroner.rainbow-csv
+    bierner.markdown-mermaid
+)
+
+if command -v code &> /dev/null; then
+    installed=$(code --list-extensions 2>/dev/null)
+    for ext in "${extensions[@]}"; do
+        if ! echo "$installed" | grep -qi "^${ext}$"; then
+            echo "Installing VS Code extension: $ext..."
+            code --install-extension "$ext" --force 2>/dev/null || true
+        fi
+    done
+    echo "VS Code extensions done."
+else
+    echo "VS Code not found, skipping extensions."
+fi
+{{- end }}

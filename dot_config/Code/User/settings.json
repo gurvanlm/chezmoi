@@ -1,0 +1,21 @@
+{
+  "workbench.colorTheme": "Tokyo Night",
+  "editor.fontFamily": "'JetBrains Mono', 'Fira Code', monospace",
+  "editor.fontSize": 14,
+  "editor.lineHeight": 1.6,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": true,
+  "editor.minimap.enabled": false,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.linkedEditing": true,
+  "editor.smoothScrolling": true,
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.renderWhitespace": "trailing",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "terminal.integrated.fontFamily": "'JetBrains Mono'",
+  "window.titleBarStyle": "custom",
+  "telemetry.telemetryLevel": "off"
+}
