@@ -90,12 +90,18 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 ### Desktop — Terminal & Éditeurs
 | Script | Outil | Méthode | Sudo |
 |--------|-------|---------|------|
-| 01 | **WezTerm** (terminal, Tokyo Night) | dépôt APT fury.io | oui |
+| 01 | **WezTerm** (terminal, Tokyo Night, JetBrains Mono NF) | dépôt APT fury.io | oui |
 | 06 | **Eclipse RCP** | tarball eclipse.org → `~/.local/share/eclipse/` | non |
 | 08 | **VS Code** | dépôt APT Microsoft | oui |
 | 09 | **Extensions VS Code** | `code --install-extension` | non |
+| 17 | **Neovim** + lazy.nvim + plugins | binaire GitHub → `~/.local/` | non |
 
 **Extensions VS Code** : Tokyo Night, Volar (Vue), Java, Java Debug, Maven, Rainbow CSV, Markdown Mermaid
+
+**Plugins Neovim** (gérés par lazy.nvim via `dot_config/nvim/lua/plugins/`) :
+- tokyonight.nvim (thème), nvim-treesitter (syntax highlighting), telescope.nvim (fuzzy finder)
+- neo-tree.nvim (file tree), gitsigns.nvim (git gutter), lualine.nvim (status bar)
+- indent-blankline.nvim (guides), nvim-autopairs (auto-fermeture)
 
 ### Desktop — Outils
 | Script | Outil | Méthode | Sudo |
@@ -128,6 +134,7 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 | `dot_config/bat/themes/` | `~/.config/bat/themes/` | Thème bat Tokyo Night |
 | `dot_config/yazi/theme.toml` | `~/.config/yazi/theme.toml` | Thème yazi Tokyo Night |
 | `dot_config/Code/User/settings.json` | `~/.config/Code/User/settings.json` | VS Code settings (Tokyo Night) |
+| `dot_config/nvim/` | `~/.config/nvim/` | Neovim config (lazy.nvim, Tokyo Night, plugins) |
 | `dot_claude/settings.json` | `~/.claude/settings.json` | Claude Code permissions |
 | `dot_m2/settings.xml.tmpl` | `~/.m2/settings.xml` | Maven settings (Nexus credentials via template) |
 | `private_dot_ssh/private_config.tmpl` | `~/.ssh/config` | SSH config (GitHub, GitLab, serveurs) |
@@ -154,6 +161,14 @@ Couleurs principales Tokyo Night :
 - Gris (commentaires) : `#565f89`
 - Fond : `#1a1b26`
 - Texte : `#c0caf5`
+
+## Bootstrap (nouvelle machine)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gurvanlm/chezmoi/main/bootstrap.sh | bash
+```
+
+Installe chezmoi, clone le repo, et applique toute la config. Après : `source ~/.zshrc` puis `tools-update --check`.
 
 ## Editing Guidelines
 

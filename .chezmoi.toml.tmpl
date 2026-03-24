@@ -7,6 +7,7 @@
 {{- $installUv := promptBoolOnce . "installUv" "Install uv Python package manager (y/n)" -}}
 {{- $installTmux := promptBoolOnce . "installTmux" "Install tmux with plugins (y/n)" -}}
 {{- $installNeovim := promptBoolOnce . "installNeovim" "Install Neovim (y/n)" -}}
+{{- $installSdkman := promptBoolOnce . "installSdkman" "Install SDKMAN + Java + Maven (y/n)" -}}
 {{- $nexusUser := promptStringOnce . "nexusUser" "Nexus username (leave empty to skip)" -}}
 {{- $nexusPassword := promptStringOnce . "nexusPassword" "Nexus password" -}}
 {{- $installWezterm := false -}}
@@ -15,6 +16,7 @@
 {{- $installDbeaver := false -}}
 {{- $installChatbox := false -}}
 {{- $installGittyup := false -}}
+{{- $installEclipse := false -}}
 {{- if or (eq (env "XDG_SESSION_TYPE") "wayland") (eq (env "XDG_SESSION_TYPE") "x11") (ne (env "DISPLAY") "") -}}
 {{-   $installWezterm = promptBoolOnce . "installWezterm" "Install wezterm and set as default terminal (y/n)" -}}
 {{-   $installVscode = promptBoolOnce . "installVscode" "Install VS Code (y/n)" -}}
