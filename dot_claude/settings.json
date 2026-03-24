@@ -1,21 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git *)",
-      "Bash(chezmoi *)",
-      "Bash(sdk *)",
-      "Bash(mvn *)",
-      "Bash(ls *)",
-      "Bash(cat *)",
-      "Bash(pwd)",
-      "Bash(which *)",
-      "Bash(echo *)",
-      "Bash(mkdir *)",
-      "Bash(cp *)",
-      "Bash(mv *)",
-      "Bash(curl *)",
-      "Bash(* --version)",
-      "Bash(* --help)",
+      "Bash",
       "Read",
       "Edit",
       "Write",
