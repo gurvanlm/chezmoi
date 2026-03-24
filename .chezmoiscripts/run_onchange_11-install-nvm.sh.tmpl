@@ -1,0 +1,31 @@
+{{- if .installNvm -}}
+#!/bin/bash
+set -eo pipefail
+
+# Install nvm
+if [ ! -d "$HOME/.nvm" ]; then
+    echo "Installing nvm..."
+    curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | PROFILE=/dev/null bash
+else
+    echo "nvm is already installed."
+fi
+
+# Source nvm to use it
+export NVM_DIR="$HOME/.nvm"
+source "$NVM_DIR/nvm.sh"
+
+# Install latest LTS Node if none installed
+if ! nvm ls --no-colors 2>/dev/null | grep -q "lts"; then
+    echo "Installing Node.js LTS..."
+    nvm install --lts
+    nvm alias default lts/*
+fi
+
+# Install npm-check-updates globally
+if ! command -v ncu &> /dev/null; then
+    echo "Installing npm-check-updates..."
+    npm install -g npm-check-updates
+else
+    echo "npm-check-updates is already installed."
+fi
+{{- end }}
