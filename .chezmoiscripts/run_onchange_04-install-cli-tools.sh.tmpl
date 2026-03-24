@@ -91,6 +91,24 @@ install_from_github "jesseduffield/lazygit" "lazygit" "linux_x86_64.tar.gz"
 # lazydocker
 install_from_github "jesseduffield/lazydocker" "lazydocker" "Linux_x86_64.tar.gz"
 
+# dust (disk usage)
+install_from_github "bootandy/dust" "dust" "x86_64-unknown-linux-musl.tar.gz"
+
+# duf (disk free)
+install_from_github "muesli/duf" "duf" "linux_x86_64.tar.gz"
+
+# glow (markdown renderer)
+install_from_github "charmbracelet/glow" "glow" "Linux_x86_64.tar.gz"
+
+# httpie
+if ! command -v http &> /dev/null; then
+    echo "Installing httpie..."
+    sudo apt-get update -qq
+    sudo apt-get install -y httpie
+else
+    echo "httpie is already installed."
+fi
+
 # btop (tbz archive with bin/ subdirectory)
 if ! command -v btop &> /dev/null; then
     echo "Installing btop..."

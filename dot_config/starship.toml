@@ -2,9 +2,11 @@
 # https://starship.rs/config/
 
 format = """
+$hostname\
 $directory\
 $git_branch\
 $git_status\
+$java\
 $python\
 $nodejs\
 $rust\
@@ -18,6 +20,12 @@ $character"""
 [character]
 success_symbol = "[❯](bold #7aa2f7)"
 error_symbol = "[❯](bold #f7768e)"
+
+# Hostname (only shown via SSH)
+[hostname]
+ssh_only = true
+style = "bold #f7768e"
+format = "[$hostname]($style) "
 
 # Directory
 [directory]
@@ -45,6 +53,9 @@ style = "#565f89"
 format = "[$duration]($style) "
 
 # Languages — subtle, only when relevant
+[java]
+style = "#f7768e"
+format = "[$symbol$version]($style) "
 [python]
 style = "#e0af68"
 format = "[$symbol$version]($style) "

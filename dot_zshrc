@@ -64,6 +64,11 @@ fi
 alias grep='grep --color=auto'
 alias lg='lazygit'
 alias lzd='lazydocker'
+alias ta='tmux attach'
+alias tn='tmux new -s'
+alias tl='tmux ls'
+alias du='dust'
+alias df='duf'
 
 # yazi — cd to directory on exit
 y() {

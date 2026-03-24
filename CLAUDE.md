@@ -75,6 +75,10 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 - **lazygit** — interface git interactive (thème Tokyo Night)
 - **lazydocker** — interface docker interactive
 - **btop** — moniteur système (thème Tokyo Night)
+- **dust** — remplacement du (espace disque en arbre)
+- **duf** — remplacement df (partitions en tableau)
+- **glow** — rendu Markdown dans le terminal
+- **httpie** — requêtes HTTP lisibles, commande `http` (apt)
 
 ### SDK & Langages
 | Script | Outil | Méthode | Sudo |
@@ -114,7 +118,8 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 |----------------|-------|-------------|
 | `dot_zshrc` | `~/.zshrc` | Config zsh (plugins, aliases, init outils) |
 | `dot_gitconfig` | `~/.gitconfig` | Git config (identité, aliases, pager bat) |
-| `dot_config/starship.toml` | `~/.config/starship.toml` | Prompt Tokyo Night |
+| `dot_zprofile` | `~/.zprofile` | Variables d'env login shell (EDITOR, LANG) |
+| `dot_config/starship.toml` | `~/.config/starship.toml` | Prompt Tokyo Night (hostname SSH, Java) |
 | `dot_config/sheldon/plugins.toml` | `~/.config/sheldon/plugins.toml` | Plugins zsh |
 | `dot_config/wezterm/wezterm.lua` | `~/.config/wezterm/wezterm.lua` | Terminal (Tokyo Night, police, Shift+Enter) |
 | `dot_config/tmux/tmux.conf` | `~/.config/tmux/tmux.conf` | Tmux (Tokyo Night, Ctrl+Space prefix, plugins) |
@@ -126,8 +131,7 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 | `dot_claude/settings.json` | `~/.claude/settings.json` | Claude Code permissions |
 | `dot_m2/settings.xml.tmpl` | `~/.m2/settings.xml` | Maven settings (Nexus credentials via template) |
 | `private_dot_ssh/private_config.tmpl` | `~/.ssh/config` | SSH config (GitHub, GitLab, serveurs) |
-| `dot_zprofile` | `~/.zprofile` | Variables d'env login shell (EDITOR, LANG) |
-| `dot_local/bin/executable_tools-update` | `~/.local/bin/tools-update` | Script de vérification des mises à jour |
+| `dot_local/bin/executable_tools-update` | `~/.local/bin/tools-update` | Script de vérification/mise à jour des outils |
 
 ## Secrets Management
 

@@ -27,6 +27,9 @@ TOOLS=(
   "lazydocker|lazydocker --version|github|jesseduffield/lazydocker|tar:Linux_x86_64.tar.gz"
   "uv|uv --version|github|astral-sh/uv|script"
   "btop|btop --version|github|aristocratos/btop|tbz:x86_64-unknown-linux-musl.tbz"
+  "dust|dust --version|github|bootandy/dust|tar:x86_64-unknown-linux-musl.tar.gz"
+  "duf|duf --version|github|muesli/duf|tar:linux_x86_64.tar.gz"
+  "glow|glow --version|github|charmbracelet/glow|tar:Linux_x86_64.tar.gz"
   "gittyup|gittyup --version|github|Murmele/Gittyup|appimage"
   'obsidian|dpkg-query -W -f=\${Version} obsidian|github-deb|obsidianmd/obsidian-releases|deb:amd64.deb'
   'chatbox|dpkg-query -W -f=\${Version} xyz.chatboxapp.app|github-deb|chatboxai/chatbox|deb-site'
