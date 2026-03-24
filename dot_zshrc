@@ -2,6 +2,9 @@
 typeset -U path
 path=(~/.local/bin $path)
 
+# Secrets (tokens, API keys — not versioned)
+[ -f ~/.config/env-secrets ] && source ~/.config/env-secrets
+
 # History
 HISTFILE=~/.zsh_history
 HISTSIZE=10000

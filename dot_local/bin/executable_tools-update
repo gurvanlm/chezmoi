@@ -1,0 +1,330 @@
+#!/bin/bash
+set -eo pipefail
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+GRAY='\033[0;90m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+# ── Tool definitions ──────────────────────────────────────────────
+# Format: name|version_cmd|type|repo_or_pkg|install_pattern
+TOOLS=(
+  "starship|starship --version|github|starship/starship|tar"
+  "sheldon|sheldon --version|github|rossmacarthur/sheldon|crate"
+  "fzf|fzf --version|github|junegunn/fzf|tar:linux_amd64.tar.gz"
+  "ripgrep|rg --version|github|BurntSushi/ripgrep|tar:x86_64-unknown-linux-musl.tar.gz"
+  "bat|bat --version|github|sharkdp/bat|tar:x86_64-unknown-linux-musl.tar.gz"
+  "fd|fd --version|github|sharkdp/fd|tar:x86_64-unknown-linux-musl.tar.gz"
+  "eza|eza --version|github|eza-community/eza|tar:x86_64-unknown-linux-musl.tar.gz"
+  "zoxide|zoxide --version|github|ajeetdsouza/zoxide|script"
+  "yazi|yazi --version|github|sxyazi/yazi|zip:x86_64-unknown-linux-musl.zip"
+  "lazygit|lazygit --version|github|jesseduffield/lazygit|tar:linux_x86_64.tar.gz"
+  "lazydocker|lazydocker --version|github|jesseduffield/lazydocker|tar:Linux_x86_64.tar.gz"
+  "uv|uv --version|github|astral-sh/uv|script"
+  "gittyup|gittyup --version|github|Murmele/Gittyup|appimage"
+  'obsidian|dpkg-query -W -f=\${Version} obsidian|github-deb|obsidianmd/obsidian-releases|deb:amd64.deb'
+  'chatbox|dpkg-query -W -f=\${Version} xyz.chatboxapp.app|github-deb|chatboxai/chatbox|deb-site'
+  "docker|docker --version|apt|docker-ce|"
+  'vscode|dpkg-query -W -f=\${Version} code|apt|code|'
+  'dbeaver|dpkg-query -W -f=\${Version} dbeaver-ce|apt|dbeaver-ce|'
+  "tmux|tmux -V|apt|tmux|"
+)
+
+# ── Helper functions ──────────────────────────────────────────────
+
+# Extract version number (digits and dots only)
+normalize_version() {
+  echo "$1" | grep -oP '\d+\.\d+[\.\d]*' | head -1 || true
+}
+
+get_local_version() {
+  local cmd="$1"
+  local output
+  output=$(eval "$cmd" 2>/dev/null) || true
+  normalize_version "$output"
+}
+
+get_github_latest() {
+  local repo="$1"
+  local tag headers=""
+  # Use GitHub token if available to avoid rate limiting
+  if [ -n "${GITHUB_TOKEN:-}" ]; then
+    headers="-H \"Authorization: token $GITHUB_TOKEN\""
+  fi
+  tag=$(eval curl -fsSL --max-time 10 $headers "https://api.github.com/repos/${repo}/releases/latest" 2>/dev/null \
+    | grep '"tag_name"' | head -1 | cut -d'"' -f4)
+  normalize_version "$tag"
+}
+
+get_apt_latest() {
+  local pkg="$1"
+  apt-cache policy "$pkg" 2>/dev/null | grep -E "Candidat|Candidate" | awk '{print $NF}' | head -1
+}
+
+get_apt_latest_normalized() {
+  local raw
+  raw=$(get_apt_latest "$1")
+  normalize_version "$raw"
+}
+
+# ── Install functions ─────────────────────────────────────────────
+
+install_github_tar() {
+  local repo="$1" binary="$2" pattern="$3"
+  local url
+  url=$(curl -fsSL "https://api.github.com/repos/${repo}/releases/latest" \
+    | grep "browser_download_url.*${pattern}" | head -1 | cut -d'"' -f4)
+  local tmpdir
+  tmpdir=$(mktemp -d)
+  curl -fsSL "$url" | tar xz -C "$tmpdir"
+  find "$tmpdir" -name "$binary" -type f -exec mv {} ~/.local/bin/ \;
+  chmod +x ~/.local/bin/"$binary"
+  rm -rf "$tmpdir"
+}
+
+install_github_zip() {
+  local repo="$1" binary="$2" pattern="$3"
+  local url
+  url=$(curl -fsSL "https://api.github.com/repos/${repo}/releases/latest" \
+    | grep "browser_download_url.*${pattern}" | grep -v ".deb" | head -1 | cut -d'"' -f4)
+  local tmpdir
+  tmpdir=$(mktemp -d)
+  curl -fsSL "$url" -o "$tmpdir/archive.zip"
+  unzip -q "$tmpdir/archive.zip" -d "$tmpdir"
+  find "$tmpdir" -name "$binary" -type f -exec mv {} ~/.local/bin/ \;
+  chmod +x ~/.local/bin/"$binary"
+  rm -rf "$tmpdir"
+}
+
+install_github_appimage() {
+  local repo="$1" binary="$2"
+  local url
+  url=$(curl -fsSL "https://api.github.com/repos/${repo}/releases/latest" \
+    | grep "browser_download_url.*AppImage" | head -1 | cut -d'"' -f4)
+  curl -fsSL "$url" -o ~/.local/bin/"$binary"
+  chmod +x ~/.local/bin/"$binary"
+}
+
+install_github_deb() {
+  local repo="$1" pattern="$2"
+  local url
+  url=$(curl -fsSL "https://api.github.com/repos/${repo}/releases/latest" \
+    | grep "browser_download_url.*${pattern}" | head -1 | cut -d'"' -f4)
+  local tmpdir
+  tmpdir=$(mktemp -d --tmpdir=/tmp)
+  curl -fsSL "$url" -o "$tmpdir/package.deb"
+  chmod 644 "$tmpdir/package.deb"
+  sudo apt-get install -y "$tmpdir/package.deb"
+  rm -rf "$tmpdir"
+}
+
+install_chatbox_deb() {
+  local version
+  version=$(curl -fsSL "https://api.github.com/repos/chatboxai/chatbox/releases/latest" \
+    | grep '"tag_name"' | cut -d'"' -f4 | sed 's/^v//')
+  local tmpdir
+  tmpdir=$(mktemp -d --tmpdir=/tmp)
+  curl -fsSL "https://download.chatboxai.app/releases/Chatbox-${version}-amd64.deb" \
+    -o "$tmpdir/chatbox.deb"
+  chmod 644 "$tmpdir/chatbox.deb"
+  sudo apt-get install -y "$tmpdir/chatbox.deb"
+  rm -rf "$tmpdir"
+}
+
+install_apt() {
+  local pkg="$1"
+  sudo apt-get update -qq
+  sudo apt-get install -y --only-upgrade "$pkg"
+}
+
+install_starship() {
+  curl -fsSL https://starship.rs/install.sh | sh -s -- --yes --bin-dir ~/.local/bin
+}
+
+install_sheldon() {
+  curl --proto '=https' -fLsS https://rossmacarthur.github.io/install/crate.sh \
+    | bash -s -- --repo rossmacarthur/sheldon --to ~/.local/bin
+}
+
+install_zoxide() {
+  curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+}
+
+install_uv() {
+  curl -fsSL https://astral.sh/uv/install.sh | sh
+}
+
+# ── Main: Check versions ─────────────────────────────────────────
+
+echo -e "${BOLD}${BLUE}  tools-update${NC} — checking versions..."
+if [ -z "${GITHUB_TOKEN:-}" ]; then
+  echo -e "${GRAY}  tip: export GITHUB_TOKEN=... to avoid API rate limits${NC}"
+fi
+echo ""
+
+declare -a NAMES=()
+declare -a LOCALS=()
+declare -a REMOTES=()
+declare -a UPDATABLE=()
+declare -a TYPES=()
+declare -a REPOS=()
+declare -a PATTERNS=()
+
+for entry in "${TOOLS[@]}"; do
+  IFS='|' read -r name version_cmd type repo pattern <<< "$entry"
+
+  printf "  ${GRAY}checking %-14s${NC}\r" "$name"
+  local_ver=$(get_local_version "$version_cmd")
+  if [ -z "$local_ver" ]; then
+    local_ver="-"
+  fi
+
+  case "$type" in
+    github|github-deb)
+      remote_ver=$(get_github_latest "$repo")
+      ;;
+    apt)
+      remote_ver=$(get_apt_latest_normalized "$repo")
+      ;;
+  esac
+
+  if [ -z "$remote_ver" ]; then
+    remote_ver="?"
+  fi
+
+  NAMES+=("$name")
+  LOCALS+=("$local_ver")
+  REMOTES+=("$remote_ver")
+  TYPES+=("$type")
+  REPOS+=("$repo")
+  PATTERNS+=("$pattern")
+
+  if [ "$local_ver" != "-" ] && [ "$remote_ver" != "?" ] && [ "$local_ver" != "$remote_ver" ]; then
+    UPDATABLE+=("$name")
+  fi
+done
+
+# ── Display table ─────────────────────────────────────────────────
+
+printf "${BOLD}  %-14s %-14s %-14s %s${NC}\n" "Tool" "Current" "Latest" "Status"
+printf "  %-14s %-14s %-14s %s\n" "──────────────" "──────────────" "──────────────" "──────"
+
+for i in "${!NAMES[@]}"; do
+  name="${NAMES[$i]}"
+  local_ver="${LOCALS[$i]}"
+  remote_ver="${REMOTES[$i]}"
+
+  if [ "$local_ver" = "-" ]; then
+    status="${GRAY}not installed${NC}"
+    color="$GRAY"
+  elif [ "$remote_ver" = "?" ]; then
+    status="${GRAY}unknown${NC}"
+    color="$GRAY"
+  elif [ "$local_ver" = "$remote_ver" ]; then
+    status="${GREEN}✓${NC}"
+    color="$GREEN"
+  else
+    status="${YELLOW}update available${NC}"
+    color="$YELLOW"
+  fi
+
+  printf "  ${BOLD}%-14s${NC} ${color}%-14s${NC} %-14s %b\n" "$name" "$local_ver" "$remote_ver" "$status"
+done
+
+echo ""
+
+# ── Check-only mode ──────────────────────────────────────────────
+
+if [ "${1:-}" = "--check" ]; then
+  if [ ${#UPDATABLE[@]} -eq 0 ]; then
+    echo -e "${GREEN}All tools are up to date.${NC}"
+  else
+    echo -e "${YELLOW}${#UPDATABLE[@]} update(s) available.${NC}"
+  fi
+  exit 0
+fi
+
+# ── Interactive update ────────────────────────────────────────────
+
+if [ ${#UPDATABLE[@]} -eq 0 ]; then
+  echo -e "${GREEN}All tools are up to date.${NC}"
+  exit 0
+fi
+
+if ! command -v fzf &> /dev/null; then
+  echo -e "${RED}fzf is required for interactive selection. Run with --check for non-interactive mode.${NC}"
+  exit 1
+fi
+
+echo -e "${CYAN}Select tools to update (TAB to select, ENTER to confirm):${NC}\n"
+
+selected=$(printf '%s\n' "${UPDATABLE[@]}" | fzf --multi --prompt="Update: " \
+  --color=fg:#c0caf5,bg:#1a1b26,hl:#bb9af7,fg+:#c0caf5,bg+:#283457,hl+:#7aa2f7,info:#7aa2f7,prompt:#7dcfff,pointer:#7aa2f7,marker:#9ece6a,spinner:#9ece6a,header:#9ece6a \
+  --header="TAB to select, ENTER to confirm, ESC to cancel" || true)
+
+if [ -z "$selected" ]; then
+  echo -e "${GRAY}No tools selected.${NC}"
+  exit 0
+fi
+
+echo ""
+
+while IFS= read -r tool; do
+  # Find tool index
+  for i in "${!NAMES[@]}"; do
+    if [ "${NAMES[$i]}" = "$tool" ]; then
+      type="${TYPES[$i]}"
+      repo="${REPOS[$i]}"
+      pattern="${PATTERNS[$i]}"
+      break
+    fi
+  done
+
+  echo -e "${BLUE}Updating ${BOLD}${tool}${NC}${BLUE}...${NC}"
+
+  case "$tool" in
+    starship)   install_starship ;;
+    sheldon)    install_sheldon ;;
+    zoxide)     install_zoxide ;;
+    uv)         install_uv ;;
+    gittyup)    install_github_appimage "$repo" "gittyup" ;;
+    chatbox)    install_chatbox_deb ;;
+    obsidian)   install_github_deb "$repo" "amd64.deb" ;;
+    yazi)
+      pat="${pattern#zip:}"
+      install_github_zip "$repo" "yazi" "$pat"
+      # Also update ya companion
+      tmpdir=$(mktemp -d)
+      url=$(curl -fsSL "https://api.github.com/repos/${repo}/releases/latest" \
+        | grep "browser_download_url.*${pat}" | grep -v ".deb" | head -1 | cut -d'"' -f4)
+      curl -fsSL "$url" -o "$tmpdir/archive.zip"
+      unzip -q "$tmpdir/archive.zip" -d "$tmpdir"
+      find "$tmpdir" -name "ya" -type f -exec mv {} ~/.local/bin/ \;
+      chmod +x ~/.local/bin/ya
+      rm -rf "$tmpdir"
+      ;;
+    docker|vscode|dbeaver)
+      install_apt "$repo"
+      ;;
+    *)
+      # Generic GitHub tar install
+      if [ "$type" = "github" ] && [[ "$pattern" == tar:* ]]; then
+        pat="${pattern#tar:}"
+        install_github_tar "$repo" "$tool" "$pat"
+      elif [ "$type" = "github-deb" ]; then
+        install_github_deb "$repo" "${pattern#deb:}"
+      else
+        echo -e "${RED}  No update method for $tool${NC}"
+      fi
+      ;;
+  esac
+
+  echo -e "${GREEN}  ✓ ${tool} updated${NC}"
+done <<< "$selected"
+
+echo -e "\n${GREEN}${BOLD}Done!${NC} Restart your shell to use the updated tools."

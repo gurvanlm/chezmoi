@@ -1,0 +1,32 @@
+{{- if .installTmux -}}
+#!/bin/bash
+set -eo pipefail
+
+# Install tmux
+if ! command -v tmux &> /dev/null; then
+    echo "Installing tmux..."
+    sudo apt-get update -qq
+    sudo apt-get install -y tmux
+else
+    echo "tmux is already installed."
+fi
+
+# Install xclip for tmux-yank clipboard support
+if ! command -v xclip &> /dev/null; then
+    echo "Installing xclip..."
+    sudo apt-get install -y xclip
+fi
+
+# Install TPM (Tmux Plugin Manager)
+TPM_DIR="$HOME/.tmux/plugins/tpm"
+if [ ! -d "$TPM_DIR" ]; then
+    echo "Installing TPM..."
+    git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+else
+    echo "TPM is already installed."
+fi
+
+# Install plugins via TPM
+echo "Installing tmux plugins..."
+"$TPM_DIR/bin/install_plugins" || true
+{{- end }}

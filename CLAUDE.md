@@ -44,6 +44,7 @@ Les scripts d'installation sont sélectifs : l'utilisateur choisit quoi installe
 1. Ajouter un `promptBoolOnce` dans `.chezmoi.toml.tmpl`
 2. Créer `.chezmoiscripts/run_onchange_XX-install-<nom>.sh.tmpl` avec le garde `{{- if .<variable> }}`
 3. Utiliser le numéro XX suivant pour l'ordre d'exécution
+4. **Ajouter l'outil dans `dot_local/bin/executable_tools-update`** (tableau `TOOLS`) pour le suivi des mises à jour
 
 **Scripts perso :** placés dans `dot_local/bin/executable_<nom>` → installés dans `~/.local/bin/`
 

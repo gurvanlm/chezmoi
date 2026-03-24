@@ -5,6 +5,7 @@
 {{- $installDocker := promptBoolOnce . "installDocker" "Install Docker Engine + Compose (y/n)" -}}
 {{- $installNvm := promptBoolOnce . "installNvm" "Install nvm + Node.js + npm-check-updates (y/n)" -}}
 {{- $installUv := promptBoolOnce . "installUv" "Install uv Python package manager (y/n)" -}}
+{{- $installTmux := promptBoolOnce . "installTmux" "Install tmux with plugins (y/n)" -}}
 {{- $nexusUser := promptStringOnce . "nexusUser" "Nexus username (leave empty to skip)" -}}
 {{- $nexusPassword := promptStringOnce . "nexusPassword" "Nexus password" -}}
 {{- $installWezterm := false -}}
@@ -31,6 +32,7 @@
     installDocker = {{ $installDocker }}
     installNvm = {{ $installNvm }}
     installUv = {{ $installUv }}
+    installTmux = {{ $installTmux }}
     installSdkman = {{ $installSdkman }}
     nexusUser = {{ $nexusUser | quote }}
     nexusPassword = {{ $nexusPassword | quote }}
