@@ -1,0 +1,31 @@
+{{- if .installNeovim -}}
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v nvim &> /dev/null; then
+    echo "Installing Neovim..."
+
+    # Download latest release
+    url=$(curl -fsSL "https://api.github.com/repos/neovim/neovim/releases/latest" \
+        | grep "browser_download_url.*linux-x86_64.tar.gz\"" | head -1 | cut -d'"' -f4)
+
+    tmpdir=$(mktemp -d)
+    curl -fsSL "$url" | tar xz -C "$tmpdir"
+
+    # Install to ~/.local (bin, lib, share)
+    cp -r "$tmpdir"/nvim-linux-x86_64/* ~/.local/
+    rm -rf "$tmpdir"
+
+    echo "Neovim installed."
+else
+    echo "Neovim is already installed."
+fi
+
+# tree-sitter CLI (needed by nvim-treesitter to compile parsers)
+if ! command -v tree-sitter &> /dev/null; then
+    if command -v npm &> /dev/null; then
+        echo "Installing tree-sitter-cli..."
+        npm install -g tree-sitter-cli
+    fi
+fi
+{{- end }}

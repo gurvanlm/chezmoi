@@ -89,4 +89,16 @@ if command -v gsettings &> /dev/null && gsettings list-schemas 2>/dev/null | gre
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:$keybinding_path command 'wezterm'
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:$keybinding_path binding '<Control><Alt>t'
 fi
+
+# Install JetBrains Mono Nerd Font
+if ! fc-list | grep -qi "JetBrainsMono Nerd Font"; then
+    echo "Installing JetBrains Mono Nerd Font..."
+    mkdir -p ~/.local/share/fonts
+    curl -fsSL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz" \
+        | tar xJ -C ~/.local/share/fonts
+    fc-cache -f
+    echo "JetBrains Mono Nerd Font installed."
+else
+    echo "JetBrains Mono Nerd Font is already installed."
+fi
 {{- end }}

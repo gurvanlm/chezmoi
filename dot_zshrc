@@ -62,6 +62,8 @@ fi
 
 # Aliases — general
 alias grep='grep --color=auto'
+alias vi='nvim'
+alias vim='nvim'
 alias lg='lazygit'
 alias lzd='lazydocker'
 alias ta='tmux attach'

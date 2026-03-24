@@ -30,6 +30,7 @@ TOOLS=(
   "dust|dust --version|github|bootandy/dust|tar:x86_64-unknown-linux-musl.tar.gz"
   "duf|duf --version|github|muesli/duf|tar:linux_x86_64.tar.gz"
   "glow|glow --version|github|charmbracelet/glow|tar:Linux_x86_64.tar.gz"
+  "nvim|nvim --version|github|neovim/neovim|tar:linux-x86_64.tar.gz"
   "gittyup|gittyup --version|github|Murmele/Gittyup|appimage"
   'obsidian|dpkg-query -W -f=\${Version} obsidian|github-deb|obsidianmd/obsidian-releases|deb:amd64.deb'
   'chatbox|dpkg-query -W -f=\${Version} xyz.chatboxapp.app|github-deb|chatboxai/chatbox|deb-site'
@@ -299,6 +300,14 @@ while IFS= read -r tool; do
     gittyup)    install_github_appimage "$repo" "gittyup" ;;
     chatbox)    install_chatbox_deb ;;
     obsidian)   install_github_deb "$repo" "amd64.deb" ;;
+    nvim)
+      url=$(curl -fsSL "https://api.github.com/repos/neovim/neovim/releases/latest" \
+        | grep "browser_download_url.*linux-x86_64.tar.gz\"" | head -1 | cut -d'"' -f4)
+      tmpdir=$(mktemp -d)
+      curl -fsSL "$url" | tar xz -C "$tmpdir"
+      cp -r "$tmpdir"/nvim-linux-x86_64/* ~/.local/
+      rm -rf "$tmpdir"
+      ;;
     yazi)
       pat="${pattern#zip:}"
       install_github_zip "$repo" "yazi" "$pat"
