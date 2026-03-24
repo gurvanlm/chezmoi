@@ -274,6 +274,70 @@ http -f POST api.example.com/form key=value # POST form
 
 ---
 
+## Copier / Coller
+
+Le clipboard traverse toutes les couches grâce à `tmux-yank` + `xclip` + Neovim `unnamedplus`.
+
+### Dans le terminal (WezTerm)
+
+```
+Ctrl+Shift+C    Copier la sélection souris
+Ctrl+Shift+V    Coller depuis le clipboard
+```
+
+Sélectionner du texte à la souris copie automatiquement dans le clipboard (WezTerm le fait par défaut).
+
+### Dans tmux
+
+**À la souris** : la souris est activée dans tmux. Sélectionner du texte avec la souris copie automatiquement dans le clipboard système (grâce à tmux-yank).
+
+**Au clavier** :
+```
+P + [           Entrer en mode copie (navigation vi)
+                → déplace-toi avec h/j/k/l, Ctrl+d/u, gg, G...
+v               Commencer la sélection
+y               Copier dans le clipboard système et quitter le mode copie
+q               Quitter le mode copie sans copier
+```
+
+**Exemple** : copier une sortie de commande
+```
+P + [           → mode copie
+gg              → remonter en haut
+v               → début de sélection
+G               → sélectionner jusqu'en bas
+y               → copié dans le clipboard
+Ctrl+Shift+V    → coller dans une autre app
+```
+
+### Dans Neovim
+
+Neovim est configuré avec `clipboard = "unnamedplus"` — il utilise le clipboard système directement.
+
+```
+yy          Copier la ligne → clipboard système
+dd          Couper la ligne → clipboard système
+v + mouvement + y   Copier la sélection → clipboard système
+p           Coller depuis le clipboard système
+```
+
+Tu peux copier dans Neovim et coller dans ton navigateur (et inversement). Tout passe par le même clipboard.
+
+### Entre les couches
+
+| De → Vers | Comment |
+|-----------|---------|
+| Terminal → App | Sélection souris ou Ctrl+Shift+C, puis Ctrl+V dans l'app |
+| App → Terminal | Ctrl+C dans l'app, puis Ctrl+Shift+V dans le terminal |
+| Tmux → App | Sélection souris ou mode copie (`P+[`, `v`, `y`), puis Ctrl+V |
+| Nvim → App | `yy` ou sélection `v`+`y`, puis Ctrl+V dans l'app |
+| App → Nvim | Ctrl+C dans l'app, puis `p` dans Neovim |
+| Tmux pane → Tmux pane | Sélection + `y`, puis `P+]` ou Ctrl+Shift+V dans l'autre pane |
+
+**Résumé** : tout converge vers le clipboard système. `y` copie, `p` colle dans Neovim/tmux. `Ctrl+Shift+C/V` dans le terminal.
+
+---
+
 ## Maintenance
 
 ```bash
