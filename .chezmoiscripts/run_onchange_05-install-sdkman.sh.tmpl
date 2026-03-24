@@ -1,0 +1,34 @@
+{{- if .installSdkman -}}
+#!/bin/bash
+set -eo pipefail
+
+# Prerequisites
+for pkg in zip unzip; do
+    if ! command -v "$pkg" &> /dev/null; then
+        echo "Installing $pkg..."
+        sudo apt-get install -y "$pkg"
+    fi
+done
+
+if [ ! -d "$HOME/.sdkman" ]; then
+    echo "Installing SDKMAN..."
+    curl -fsSL "https://get.sdkman.io?rcupdate=false" | bash
+else
+    echo "SDKMAN is already installed."
+fi
+
+# Source SDKMAN to install default tools
+export SDKMAN_DIR="$HOME/.sdkman"
+source "$SDKMAN_DIR/bin/sdkman-init.sh"
+
+# Install Java LTS and Maven if not present
+if ! sdk list java | grep -q "installed"; then
+    echo "Installing Java (latest LTS)..."
+    sdk install java
+fi
+
+if ! command -v mvn &> /dev/null; then
+    echo "Installing Maven..."
+    sdk install maven
+fi
+{{- end }}

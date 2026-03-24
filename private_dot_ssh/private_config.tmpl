@@ -1,0 +1,27 @@
+# Defaults
+Host *
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    IdentitiesOnly yes
+    IdentityFile {{ .chezmoi.homeDir }}/.ssh/id_ed25519
+
+# Git
+Host github.com
+    HostName github.com
+    PreferredAuthentications publickey
+
+Host gitlab.edgemind.net
+    HostName gitlab.edgemind.net
+    Port 8022
+    PreferredAuthentications publickey
+
+# Servers
+Host carpo
+    HostName carpo.edgemind.net
+
+Host new-carpo
+    HostName 51.210.33.102
+    PreferredAuthentications publickey
+
+Host callisto
+    HostName callisto.edgemind.net

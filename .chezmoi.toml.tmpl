@@ -2,9 +2,12 @@
 {{- $installStarship := promptBoolOnce . "installStarship" "Install starship prompt (y/n)" -}}
 {{- $installSheldon := promptBoolOnce . "installSheldon" "Install sheldon plugin manager for zsh (y/n)" -}}
 {{- $installCliTools := promptBoolOnce . "installCliTools" "Install CLI tools: fzf, eza, bat, fd, ripgrep, zoxide (y/n)" -}}
+{{- $nexusUser := promptStringOnce . "nexusUser" "Nexus username (leave empty to skip)" -}}
+{{- $nexusPassword := promptStringOnce . "nexusPassword" "Nexus password" -}}
 {{- $installWezterm := false -}}
 {{- if or (eq (env "XDG_SESSION_TYPE") "wayland") (eq (env "XDG_SESSION_TYPE") "x11") (ne (env "DISPLAY") "") -}}
 {{-   $installWezterm = promptBoolOnce . "installWezterm" "Install wezterm and set as default terminal (y/n)" -}}
+{{-   $installEclipse = promptBoolOnce . "installEclipse" "Install Eclipse IDE for RCP/RAP developers (y/n)" -}}
 {{- end -}}
 
 [data]
@@ -12,4 +15,8 @@
     installStarship = {{ $installStarship }}
     installSheldon = {{ $installSheldon }}
     installCliTools = {{ $installCliTools }}
+    installSdkman = {{ $installSdkman }}
+    nexusUser = {{ $nexusUser | quote }}
+    nexusPassword = {{ $nexusPassword | quote }}
     installWezterm = {{ $installWezterm }}
+    installEclipse = {{ $installEclipse }}

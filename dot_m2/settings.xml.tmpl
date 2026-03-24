@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
+{{- if and .nexusUser .nexusPassword }}
+
+    <servers>
+        <server>
+            <id>edgemind-releases</id>
+            <username>{{ .nexusUser }}</username>
+            <password>{{ .nexusPassword }}</password>
+        </server>
+        <server>
+            <id>edgemind-snapshots</id>
+            <username>{{ .nexusUser }}</username>
+            <password>{{ .nexusPassword }}</password>
+        </server>
+    </servers>
+{{- end }}
+
+    <profiles>
+        <profile>
+            <id>edgemind-repos</id>
+            <repositories>
+                <repository>
+                    <id>edgemind-releases</id>
+                    <url>https://repo.edgemind.net/nexus/repository/edgemind-releases</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>edgemind-snapshots</id>
+                    <url>https://repo.edgemind.net/nexus/repository/edgemind-snapshots</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>edgemind-repos</activeProfile>
+    </activeProfiles>
+
+</settings>

@@ -1,0 +1,54 @@
+{{- if .installEclipse -}}
+#!/bin/bash
+set -eo pipefail
+
+ECLIPSE_VERSION="2026-03"
+ECLIPSE_DIR="$HOME/.local/share/eclipse"
+ECLIPSE_DESKTOP="$HOME/.local/share/applications/eclipse.desktop"
+
+if [ -x "$ECLIPSE_DIR/eclipse" ]; then
+    echo "Eclipse is already installed."
+else
+    echo "Installing Eclipse IDE for RCP/RAP Developers ${ECLIPSE_VERSION}..."
+
+    tmpdir=$(mktemp -d)
+    url="https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/${ECLIPSE_VERSION}/R/eclipse-rcp-${ECLIPSE_VERSION}-R-linux-gtk-x86_64.tar.gz&r=1"
+
+    echo "Downloading..."
+    curl -fSL "$url" -o "$tmpdir/eclipse.tar.gz"
+
+    echo "Extracting..."
+    mkdir -p "$HOME/.local/share"
+    tar xzf "$tmpdir/eclipse.tar.gz" -C "$HOME/.local/share"
+    rm -rf "$tmpdir"
+
+    echo "Eclipse installed in $ECLIPSE_DIR"
+fi
+
+# Symlink to PATH
+if [ ! -e "$HOME/.local/bin/eclipse" ]; then
+    ln -s "$ECLIPSE_DIR/eclipse" "$HOME/.local/bin/eclipse"
+fi
+
+# Desktop entry for GNOME
+mkdir -p "$(dirname "$ECLIPSE_DESKTOP")"
+cat > "$ECLIPSE_DESKTOP" <<EOF
+[Desktop Entry]
+Name=Eclipse IDE
+Comment=Eclipse IDE for RCP/RAP Developers
+Exec=$ECLIPSE_DIR/eclipse
+Icon=$ECLIPSE_DIR/icon.xpm
+Terminal=false
+Type=Application
+Categories=Development;IDE;Java;
+StartupNotify=true
+StartupWMClass=Eclipse
+EOF
+
+# Update desktop database
+if command -v update-desktop-database &> /dev/null; then
+    update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
+fi
+
+echo "Eclipse setup complete."
+{{- end }}

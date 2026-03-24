@@ -12,4 +12,10 @@ config.color_scheme = 'Tokyo Night'
 -- Hide tab bar
 config.enable_tab_bar = false
 
+-- Keybindings
+config.keys = {
+    -- Shift+Enter sends a real newline (for Claude Code multiline input)
+    { key = 'Enter', mods = 'SHIFT', action = wezterm.action.SendString('\n') },
+}
+
 return config
