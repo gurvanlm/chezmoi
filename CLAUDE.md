@@ -38,6 +38,7 @@ Les scripts d'installation sont sélectifs : l'utilisateur choisit quoi installe
 - Chaque script est un `run_onchange_XX-install-<nom>.sh.tmpl` conditionné par `{{- if .<variable> }}...{{- end }}`
 - Quand la variable est `false`, le template rend un contenu vide → chezmoi ne l'exécute pas
 - Cibles : Debian/Ubuntu (serveur et desktop)
+- Les outils desktop (wezterm, vscode, eclipse, obsidian, dbeaver, chatbox, gittyup) sont conditionnés à la présence d'une session graphique (XDG_SESSION_TYPE ou DISPLAY)
 
 **Pour ajouter un nouveau script d'installation :**
 1. Ajouter un `promptBoolOnce` dans `.chezmoi.toml.tmpl`
@@ -45,6 +46,83 @@ Les scripts d'installation sont sélectifs : l'utilisateur choisit quoi installe
 3. Utiliser le numéro XX suivant pour l'ordre d'exécution
 
 **Scripts perso :** placés dans `dot_local/bin/executable_<nom>` → installés dans `~/.local/bin/`
+
+## Installed Tools
+
+### Shell & Prompt
+| Script | Outil | Méthode | Sudo |
+|--------|-------|---------|------|
+| 00 | **zsh** | apt | oui |
+| 02 | **starship** (prompt Tokyo Night) | binaire GitHub → `~/.local/bin/` | non |
+| 03 | **sheldon** (plugin manager zsh) | binaire GitHub → `~/.local/bin/` | non |
+
+**Plugins zsh** (gérés par sheldon via `dot_config/sheldon/plugins.toml`) :
+- zsh-autosuggestions, zsh-syntax-highlighting, zsh-completions, zsh-history-substring-search, fzf-tab
+
+### CLI Tools (script 04)
+Tous installés en binaires GitHub dans `~/.local/bin/`, sans sudo :
+- **fzf** — fuzzy finder (Ctrl+R, Ctrl+T, Alt+C)
+- **eza** — remplacement ls avec icônes
+- **bat** — remplacement cat avec syntax highlighting (thème Tokyo Night)
+- **fd** — remplacement find
+- **ripgrep** (rg) — remplacement grep
+- **zoxide** — remplacement cd intelligent
+- **yazi** — file manager terminal (thème Tokyo Night)
+- **lazygit** — interface git interactive
+- **lazydocker** — interface docker interactive
+
+### SDK & Langages
+| Script | Outil | Méthode | Sudo |
+|--------|-------|---------|------|
+| 05 | **SDKMAN** (Java LTS + Maven) | script officiel → `~/.sdkman/` | non (sauf zip/unzip) |
+| 11 | **nvm** (Node.js LTS + npm-check-updates) | script officiel → `~/.nvm/` | non |
+| 12 | **uv** (Python package manager) | script officiel → `~/.local/bin/` | non |
+
+### Desktop — Terminal & Éditeurs
+| Script | Outil | Méthode | Sudo |
+|--------|-------|---------|------|
+| 01 | **WezTerm** (terminal, Tokyo Night) | dépôt APT fury.io | oui |
+| 06 | **Eclipse RCP** | tarball eclipse.org → `~/.local/share/eclipse/` | non |
+| 08 | **VS Code** | dépôt APT Microsoft | oui |
+| 09 | **Extensions VS Code** | `code --install-extension` | non |
+
+**Extensions VS Code** : Tokyo Night, Volar (Vue), Java, Java Debug, Maven, Rainbow CSV, Markdown Mermaid
+
+### Desktop — Outils
+| Script | Outil | Méthode | Sudo |
+|--------|-------|---------|------|
+| 07 | **Docker** + Compose + BuildX | dépôt APT Docker officiel | oui |
+| 10 | **Obsidian** + clone vault `~/brain` | .deb GitHub releases | oui |
+| 13 | **DBeaver CE** | dépôt APT officiel dbeaver.io | oui |
+| 14 | **ChatBox** (AI client) | .deb depuis chatboxai.app | oui |
+| 15 | **Gittyup** (git GUI) | AppImage GitHub → `~/.local/bin/` | non |
+
+### Post-install
+| Script | Action |
+|--------|--------|
+| 99 | Rebuild cache bat (thèmes) |
+
+## Managed Config Files
+
+| Fichier chezmoi | Cible | Description |
+|----------------|-------|-------------|
+| `dot_zshrc` | `~/.zshrc` | Config zsh (plugins, aliases, init outils) |
+| `dot_gitconfig` | `~/.gitconfig` | Git config (identité, aliases, pager bat) |
+| `dot_config/starship.toml` | `~/.config/starship.toml` | Prompt Tokyo Night |
+| `dot_config/sheldon/plugins.toml` | `~/.config/sheldon/plugins.toml` | Plugins zsh |
+| `dot_config/wezterm/wezterm.lua` | `~/.config/wezterm/wezterm.lua` | Terminal (Tokyo Night, Shift+Enter) |
+| `dot_config/bat/themes/` | `~/.config/bat/themes/` | Thème bat Tokyo Night |
+| `dot_config/yazi/theme.toml` | `~/.config/yazi/theme.toml` | Thème yazi Tokyo Night |
+| `dot_config/Code/User/settings.json` | `~/.config/Code/User/settings.json` | VS Code settings (Tokyo Night) |
+| `dot_claude/settings.json` | `~/.claude/settings.json` | Claude Code permissions |
+| `dot_m2/settings.xml.tmpl` | `~/.m2/settings.xml` | Maven settings (Nexus credentials via template) |
+| `private_dot_ssh/private_config.tmpl` | `~/.ssh/config` | SSH config (GitHub, GitLab, serveurs) |
+
+## Secrets Management
+
+Les secrets ne sont pas versionnés dans git. Ils sont stockés dans `~/.config/chezmoi/chezmoi.toml` (local) et injectés via des templates `.tmpl` :
+- `nexusUser` / `nexusPassword` → `dot_m2/settings.xml.tmpl`
+- Pour de futurs secrets, envisager l'intégration Bitwarden de chezmoi.
 
 ## Theme
 
