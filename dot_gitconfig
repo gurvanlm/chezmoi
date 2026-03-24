@@ -8,6 +8,7 @@
 [core]
     editor = nano
     pager = bat --plain
+    excludesFile = ~/.config/git/ignore
 
 [pull]
     rebase = true

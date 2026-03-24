@@ -9,6 +9,18 @@ config.window_decorations = "TITLE|RESIZE"
 -- Theme
 config.color_scheme = 'Tokyo Night'
 
+-- Font
+config.font_size = 11
+config.line_height = 1.1
+
+-- Window
+config.window_padding = {
+    left = 8,
+    right = 8,
+    top = 4,
+    bottom = 4,
+}
+
 -- Hide tab bar
 config.enable_tab_bar = false
 

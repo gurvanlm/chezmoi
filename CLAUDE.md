@@ -61,7 +61,10 @@ Les scripts d'installation sont sélectifs : l'utilisateur choisit quoi installe
 - zsh-autosuggestions, zsh-syntax-highlighting, zsh-completions, zsh-history-substring-search, fzf-tab
 
 ### CLI Tools (script 04)
-Tous installés en binaires GitHub dans `~/.local/bin/`, sans sudo :
+Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
+- **jq** — processeur JSON (apt)
+- **tealdeer** — pages man simplifiées, commande `tldr` (apt)
+- **direnv** — variables d'env par dossier projet (apt)
 - **fzf** — fuzzy finder (Ctrl+R, Ctrl+T, Alt+C)
 - **eza** — remplacement ls avec icônes
 - **bat** — remplacement cat avec syntax highlighting (thème Tokyo Night)
@@ -69,8 +72,9 @@ Tous installés en binaires GitHub dans `~/.local/bin/`, sans sudo :
 - **ripgrep** (rg) — remplacement grep
 - **zoxide** — remplacement cd intelligent
 - **yazi** — file manager terminal (thème Tokyo Night)
-- **lazygit** — interface git interactive
+- **lazygit** — interface git interactive (thème Tokyo Night)
 - **lazydocker** — interface docker interactive
+- **btop** — moniteur système (thème Tokyo Night)
 
 ### SDK & Langages
 | Script | Outil | Méthode | Sudo |
@@ -97,6 +101,7 @@ Tous installés en binaires GitHub dans `~/.local/bin/`, sans sudo :
 | 13 | **DBeaver CE** | dépôt APT officiel dbeaver.io | oui |
 | 14 | **ChatBox** (AI client) | .deb depuis chatboxai.app | oui |
 | 15 | **Gittyup** (git GUI) | AppImage GitHub → `~/.local/bin/` | non |
+| 16 | **tmux** + TPM + plugins | apt + git clone | oui |
 
 ### Post-install
 | Script | Action |
@@ -111,18 +116,24 @@ Tous installés en binaires GitHub dans `~/.local/bin/`, sans sudo :
 | `dot_gitconfig` | `~/.gitconfig` | Git config (identité, aliases, pager bat) |
 | `dot_config/starship.toml` | `~/.config/starship.toml` | Prompt Tokyo Night |
 | `dot_config/sheldon/plugins.toml` | `~/.config/sheldon/plugins.toml` | Plugins zsh |
-| `dot_config/wezterm/wezterm.lua` | `~/.config/wezterm/wezterm.lua` | Terminal (Tokyo Night, Shift+Enter) |
+| `dot_config/wezterm/wezterm.lua` | `~/.config/wezterm/wezterm.lua` | Terminal (Tokyo Night, police, Shift+Enter) |
+| `dot_config/tmux/tmux.conf` | `~/.config/tmux/tmux.conf` | Tmux (Tokyo Night, Ctrl+Space prefix, plugins) |
+| `dot_config/lazygit/config.yml` | `~/.config/lazygit/config.yml` | Lazygit thème Tokyo Night |
+| `dot_config/git/ignore` | `~/.config/git/ignore` | Gitignore global (.env, node_modules, .idea...) |
 | `dot_config/bat/themes/` | `~/.config/bat/themes/` | Thème bat Tokyo Night |
 | `dot_config/yazi/theme.toml` | `~/.config/yazi/theme.toml` | Thème yazi Tokyo Night |
 | `dot_config/Code/User/settings.json` | `~/.config/Code/User/settings.json` | VS Code settings (Tokyo Night) |
 | `dot_claude/settings.json` | `~/.claude/settings.json` | Claude Code permissions |
 | `dot_m2/settings.xml.tmpl` | `~/.m2/settings.xml` | Maven settings (Nexus credentials via template) |
 | `private_dot_ssh/private_config.tmpl` | `~/.ssh/config` | SSH config (GitHub, GitLab, serveurs) |
+| `dot_zprofile` | `~/.zprofile` | Variables d'env login shell (EDITOR, LANG) |
+| `dot_local/bin/executable_tools-update` | `~/.local/bin/tools-update` | Script de vérification des mises à jour |
 
 ## Secrets Management
 
-Les secrets ne sont pas versionnés dans git. Ils sont stockés dans `~/.config/chezmoi/chezmoi.toml` (local) et injectés via des templates `.tmpl` :
-- `nexusUser` / `nexusPassword` → `dot_m2/settings.xml.tmpl`
+Les secrets ne sont pas versionnés dans git :
+- `~/.config/chezmoi/chezmoi.toml` (local) → injectés via templates `.tmpl` : `nexusUser` / `nexusPassword`
+- `~/.config/env-secrets` → tokens exportés dans le shell (ex: `GITHUB_TOKEN`), sourcé par `.zshrc`
 - Pour de futurs secrets, envisager l'intégration Bitwarden de chezmoi.
 
 ## Theme

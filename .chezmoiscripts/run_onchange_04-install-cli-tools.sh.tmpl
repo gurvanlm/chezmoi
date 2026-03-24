@@ -24,6 +24,15 @@ install_from_github() {
     echo "$binary installed."
 }
 
+# jq, tldr, direnv — available in Debian repos
+for pkg in jq tealdeer direnv; do
+    if ! command -v "$pkg" &> /dev/null; then
+        echo "Installing $pkg..."
+        sudo apt-get update -qq
+        sudo apt-get install -y "$pkg"
+    fi
+done
+
 # fzf
 install_from_github "junegunn/fzf" "fzf" "linux_amd64.tar.gz"
 
