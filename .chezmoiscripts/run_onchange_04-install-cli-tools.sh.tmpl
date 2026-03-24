@@ -82,5 +82,23 @@ install_from_github "jesseduffield/lazygit" "lazygit" "linux_x86_64.tar.gz"
 # lazydocker
 install_from_github "jesseduffield/lazydocker" "lazydocker" "Linux_x86_64.tar.gz"
 
+# btop (tbz archive with bin/ subdirectory)
+if ! command -v btop &> /dev/null; then
+    echo "Installing btop..."
+    url=$(curl -fsSL "https://api.github.com/repos/aristocratos/btop/releases/latest" \
+        | grep "browser_download_url.*x86_64-unknown-linux-musl.tbz" | head -1 | cut -d'"' -f4)
+    tmpdir=$(mktemp -d)
+    curl -fsSL "$url" | tar xj -C "$tmpdir"
+    cp "$tmpdir/btop/bin/btop" ~/.local/bin/btop
+    chmod +x ~/.local/bin/btop
+    # Install Tokyo Night theme
+    mkdir -p ~/.config/btop/themes
+    cp "$tmpdir/btop/themes/tokyo-night.theme" ~/.config/btop/themes/
+    rm -rf "$tmpdir"
+    echo "btop installed."
+else
+    echo "btop is already installed."
+fi
+
 echo "All CLI tools installed."
 {{- end }}

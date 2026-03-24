@@ -26,6 +26,7 @@ TOOLS=(
   "lazygit|lazygit --version|github|jesseduffield/lazygit|tar:linux_x86_64.tar.gz"
   "lazydocker|lazydocker --version|github|jesseduffield/lazydocker|tar:Linux_x86_64.tar.gz"
   "uv|uv --version|github|astral-sh/uv|script"
+  "btop|btop --version|github|aristocratos/btop|tbz:x86_64-unknown-linux-musl.tbz"
   "gittyup|gittyup --version|github|Murmele/Gittyup|appimage"
   'obsidian|dpkg-query -W -f=\${Version} obsidian|github-deb|obsidianmd/obsidian-releases|deb:amd64.deb'
   'chatbox|dpkg-query -W -f=\${Version} xyz.chatboxapp.app|github-deb|chatboxai/chatbox|deb-site'
@@ -308,7 +309,16 @@ while IFS= read -r tool; do
       chmod +x ~/.local/bin/ya
       rm -rf "$tmpdir"
       ;;
-    docker|vscode|dbeaver)
+    btop)
+      url=$(curl -fsSL "https://api.github.com/repos/aristocratos/btop/releases/latest" \
+        | grep "browser_download_url.*x86_64-unknown-linux-musl.tbz" | head -1 | cut -d'"' -f4)
+      tmpdir=$(mktemp -d)
+      curl -fsSL "$url" | tar xj -C "$tmpdir"
+      cp "$tmpdir/btop/bin/btop" ~/.local/bin/btop
+      chmod +x ~/.local/bin/btop
+      rm -rf "$tmpdir"
+      ;;
+    docker|vscode|dbeaver|tmux)
       install_apt "$repo"
       ;;
     *)
