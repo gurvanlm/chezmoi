@@ -1,0 +1,43 @@
+{{- if .installGittyup -}}
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v gittyup &> /dev/null; then
+    echo "Installing Gittyup..."
+
+    # Get latest AppImage URL from GitHub releases
+    url=$(curl -fsSL "https://api.github.com/repos/Murmele/Gittyup/releases/latest" \
+        | grep "browser_download_url.*AppImage" | head -1 | cut -d'"' -f4)
+
+    mkdir -p ~/.local/bin
+    curl -fsSL "$url" -o ~/.local/bin/gittyup
+    chmod +x ~/.local/bin/gittyup
+
+    # Download icon
+    mkdir -p ~/.local/share/icons
+    curl -fsSL "https://raw.githubusercontent.com/Murmele/Gittyup/master/rsrc/Gittyup.iconset/icon_256x256.png" \
+        -o ~/.local/share/icons/gittyup.png
+
+    echo "Gittyup installed."
+else
+    echo "Gittyup is already installed."
+fi
+
+# Desktop entry for GNOME
+DESKTOP_FILE="$HOME/.local/share/applications/gittyup.desktop"
+if [ ! -f "$DESKTOP_FILE" ]; then
+    mkdir -p "$(dirname "$DESKTOP_FILE")"
+    cat > "$DESKTOP_FILE" <<EOF
+[Desktop Entry]
+Name=Gittyup
+Comment=Git GUI client
+Exec=$HOME/.local/bin/gittyup
+Icon=$HOME/.local/share/icons/gittyup.png
+Terminal=false
+Type=Application
+Categories=Development;RevisionControl;
+StartupNotify=true
+EOF
+    update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
+fi
+{{- end }}

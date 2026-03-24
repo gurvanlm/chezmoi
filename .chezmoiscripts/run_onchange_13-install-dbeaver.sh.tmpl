@@ -1,0 +1,26 @@
+{{- if .installDbeaver -}}
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v dbeaver-ce &> /dev/null && ! dpkg -s dbeaver-ce &> /dev/null; then
+    echo "Installing DBeaver CE..."
+
+    # Add DBeaver GPG key
+    if [ ! -f /usr/share/keyrings/dbeaver-keyring.gpg ]; then
+        curl -fsSL https://dbeaver.io/debs/dbeaver.gpg.key \
+            | sudo gpg --yes --dearmor -o /usr/share/keyrings/dbeaver-keyring.gpg
+    fi
+
+    # Add repository
+    echo "deb [signed-by=/usr/share/keyrings/dbeaver-keyring.gpg] https://dbeaver.io/debs/dbeaver-ce /" \
+        | sudo tee /etc/apt/sources.list.d/dbeaver.list > /dev/null
+
+    # Install
+    sudo apt-get update -qq
+    sudo apt-get install -y dbeaver-ce
+
+    echo "DBeaver CE installed."
+else
+    echo "DBeaver CE is already installed."
+fi
+{{- end }}

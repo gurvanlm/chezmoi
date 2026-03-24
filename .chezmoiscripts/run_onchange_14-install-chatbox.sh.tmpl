@@ -1,0 +1,23 @@
+{{- if .installChatbox -}}
+#!/bin/bash
+set -euo pipefail
+
+if ! dpkg -s chatbox &> /dev/null; then
+    echo "Installing ChatBox..."
+
+    # Get latest version from GitHub API
+    version=$(curl -fsSL "https://api.github.com/repos/chatboxai/chatbox/releases/latest" \
+        | grep '"tag_name"' | cut -d'"' -f4 | sed 's/^v//')
+
+    tmpdir=$(mktemp -d --tmpdir=/tmp)
+    curl -fsSL "https://download.chatboxai.app/releases/Chatbox-${version}-amd64.deb" \
+        -o "$tmpdir/chatbox.deb"
+    chmod 644 "$tmpdir/chatbox.deb"
+    sudo apt-get install -y "$tmpdir/chatbox.deb"
+    rm -rf "$tmpdir"
+
+    echo "ChatBox installed."
+else
+    echo "ChatBox is already installed."
+fi
+{{- end }}

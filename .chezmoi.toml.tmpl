@@ -10,10 +10,16 @@
 {{- $installWezterm := false -}}
 {{- $installVscode := false -}}
 {{- $installObsidian := false -}}
+{{- $installDbeaver := false -}}
+{{- $installChatbox := false -}}
+{{- $installGittyup := false -}}
 {{- if or (eq (env "XDG_SESSION_TYPE") "wayland") (eq (env "XDG_SESSION_TYPE") "x11") (ne (env "DISPLAY") "") -}}
 {{-   $installWezterm = promptBoolOnce . "installWezterm" "Install wezterm and set as default terminal (y/n)" -}}
 {{-   $installVscode = promptBoolOnce . "installVscode" "Install VS Code (y/n)" -}}
 {{-   $installObsidian = promptBoolOnce . "installObsidian" "Install Obsidian (y/n)" -}}
+{{-   $installDbeaver = promptBoolOnce . "installDbeaver" "Install DBeaver CE (y/n)" -}}
+{{-   $installChatbox = promptBoolOnce . "installChatbox" "Install ChatBox AI client (y/n)" -}}
+{{-   $installGittyup = promptBoolOnce . "installGittyup" "Install Gittyup git GUI (y/n)" -}}
 {{-   $installEclipse = promptBoolOnce . "installEclipse" "Install Eclipse IDE for RCP/RAP developers (y/n)" -}}
 {{- end -}}
 
@@ -31,4 +37,7 @@
     installWezterm = {{ $installWezterm }}
     installVscode = {{ $installVscode }}
     installObsidian = {{ $installObsidian }}
+    installDbeaver = {{ $installDbeaver }}
+    installChatbox = {{ $installChatbox }}
+    installGittyup = {{ $installGittyup }}
     installEclipse = {{ $installEclipse }}
