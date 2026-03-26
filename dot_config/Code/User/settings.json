@@ -1,6 +1,7 @@
 {
   "workbench.colorTheme": "Tokyo Night",
-  "editor.fontFamily": "'JetBrains Mono', 'Fira Code', monospace",
+  "editor.fontFamily": "'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace",
+  "editor.fontLigatures": true,
   "editor.fontSize": 14,
   "editor.lineHeight": 1.6,
   "editor.tabSize": 2,
@@ -15,7 +16,7 @@
   "editor.renderWhitespace": "trailing",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
-  "terminal.integrated.fontFamily": "'JetBrains Mono'",
+  "terminal.integrated.fontFamily": "'JetBrainsMono Nerd Font'",
   "window.titleBarStyle": "custom",
   "telemetry.telemetryLevel": "off"
 }

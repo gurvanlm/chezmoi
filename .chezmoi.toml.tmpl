@@ -16,6 +16,7 @@
 {{- $installDbeaver := false -}}
 {{- $installChatbox := false -}}
 {{- $installGittyup := false -}}
+{{- $installChromium := false -}}
 {{- $installEclipse := false -}}
 {{- if or (eq (env "XDG_SESSION_TYPE") "wayland") (eq (env "XDG_SESSION_TYPE") "x11") (ne (env "DISPLAY") "") -}}
 {{-   $installWezterm = promptBoolOnce . "installWezterm" "Install wezterm and set as default terminal (y/n)" -}}
@@ -24,6 +25,7 @@
 {{-   $installDbeaver = promptBoolOnce . "installDbeaver" "Install DBeaver CE (y/n)" -}}
 {{-   $installChatbox = promptBoolOnce . "installChatbox" "Install ChatBox AI client (y/n)" -}}
 {{-   $installGittyup = promptBoolOnce . "installGittyup" "Install Gittyup git GUI (y/n)" -}}
+{{-   $installChromium = promptBoolOnce . "installChromium" "Install Chromium browser (y/n)" -}}
 {{-   $installEclipse = promptBoolOnce . "installEclipse" "Install Eclipse IDE for RCP/RAP developers (y/n)" -}}
 {{- end -}}
 
@@ -46,4 +48,5 @@
     installDbeaver = {{ $installDbeaver }}
     installChatbox = {{ $installChatbox }}
     installGittyup = {{ $installGittyup }}
+    installChromium = {{ $installChromium }}
     installEclipse = {{ $installEclipse }}

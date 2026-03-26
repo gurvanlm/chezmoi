@@ -1,0 +1,13 @@
+{{- if .installChromium -}}
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v chromium &> /dev/null; then
+    echo "Installing Chromium..."
+    sudo apt-get update -qq
+    sudo apt-get install -y chromium
+    echo "Chromium installed."
+else
+    echo "Chromium is already installed."
+fi
+{{- end }}
