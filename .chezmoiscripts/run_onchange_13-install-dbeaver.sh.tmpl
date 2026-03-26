@@ -23,4 +23,13 @@ if ! command -v dbeaver-ce &> /dev/null && ! dpkg -s dbeaver-ce &> /dev/null; th
 else
     echo "DBeaver CE is already installed."
 fi
+
+# Fix SWT scaling issue on Wayland/XWayland (UI appears zoomed)
+if [ -f /usr/share/dbeaver-ce/dbeaver.ini ]; then
+    if ! grep -q "swt.autoScale=false" /usr/share/dbeaver-ce/dbeaver.ini; then
+        echo "Fixing DBeaver scaling..."
+        sudo sed -i '/-vmargs/a -Dswt.autoScale=false' /usr/share/dbeaver-ce/dbeaver.ini
+        echo "DBeaver scaling fixed."
+    fi
+fi
 {{- end }}
