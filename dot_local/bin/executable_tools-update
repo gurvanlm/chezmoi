@@ -33,7 +33,7 @@ TOOLS=(
   "nvim|nvim --version|github|neovim/neovim|tar:linux-x86_64.tar.gz"
   "gittyup|gittyup --version|github|Murmele/Gittyup|appimage"
   'obsidian|dpkg-query -W -f=\${Version} obsidian|github-deb|obsidianmd/obsidian-releases|deb:amd64.deb'
-  'chatbox|dpkg-query -W -f=\${Version} xyz.chatboxapp.app|github-deb|chatboxai/chatbox|deb-site'
+  'chatbox|dpkg-query -W -f=\${Version} xyz.chatboxapp.app|chatbox-site|chatboxai/chatbox|deb-site'
   "docker|docker --version|apt|docker-ce|"
   'vscode|dpkg-query -W -f=\${Version} code|apt|code|'
   'dbeaver|dpkg-query -W -f=\${Version} dbeaver-ce|apt|dbeaver-ce|'
@@ -64,6 +64,11 @@ get_github_latest() {
   tag=$(eval curl -fsSL --max-time 10 $headers "https://api.github.com/repos/${repo}/releases/latest" 2>/dev/null \
     | grep '"tag_name"' | head -1 | cut -d'"' -f4)
   normalize_version "$tag"
+}
+
+get_chatbox_latest() {
+  curl -fsSL --max-time 10 "https://download.chatboxai.app/releases/latest-linux.yml" 2>/dev/null \
+    | grep "^version:" | awk '{print $2}'
 }
 
 get_apt_latest() {
@@ -130,8 +135,7 @@ install_github_deb() {
 
 install_chatbox_deb() {
   local version
-  version=$(curl -fsSL "https://api.github.com/repos/chatboxai/chatbox/releases/latest" \
-    | grep '"tag_name"' | cut -d'"' -f4 | sed 's/^v//')
+  version=$(get_chatbox_latest)
   local tmpdir
   tmpdir=$(mktemp -d --tmpdir=/tmp)
   curl -fsSL "https://download.chatboxai.app/releases/Chatbox-${version}-amd64.deb" \
@@ -192,6 +196,9 @@ for entry in "${TOOLS[@]}"; do
   case "$type" in
     github|github-deb)
       remote_ver=$(get_github_latest "$repo")
+      ;;
+    chatbox-site)
+      remote_ver=$(get_chatbox_latest)
       ;;
     apt)
       remote_ver=$(get_apt_latest_normalized "$repo")
