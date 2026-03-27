@@ -17,6 +17,7 @@
 {{- $installChatbox := false -}}
 {{- $installGittyup := false -}}
 {{- $installChromium := false -}}
+{{- $installDashToPanel := false -}}
 {{- $installEclipse := false -}}
 {{- if or (eq (env "XDG_SESSION_TYPE") "wayland") (eq (env "XDG_SESSION_TYPE") "x11") (ne (env "DISPLAY") "") -}}
 {{-   $installWezterm = promptBoolOnce . "installWezterm" "Install wezterm and set as default terminal (y/n)" -}}
@@ -26,6 +27,7 @@
 {{-   $installChatbox = promptBoolOnce . "installChatbox" "Install ChatBox AI client (y/n)" -}}
 {{-   $installGittyup = promptBoolOnce . "installGittyup" "Install Gittyup git GUI (y/n)" -}}
 {{-   $installChromium = promptBoolOnce . "installChromium" "Install Chromium browser (y/n)" -}}
+{{-   $installDashToPanel = promptBoolOnce . "installDashToPanel" "Install GNOME Dash to Panel extension (y/n)" -}}
 {{-   $installEclipse = promptBoolOnce . "installEclipse" "Install Eclipse IDE for RCP/RAP developers (y/n)" -}}
 {{- end -}}
 
@@ -49,4 +51,5 @@
     installChatbox = {{ $installChatbox }}
     installGittyup = {{ $installGittyup }}
     installChromium = {{ $installChromium }}
+    installDashToPanel = {{ $installDashToPanel }}
     installEclipse = {{ $installEclipse }}

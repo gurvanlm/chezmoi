@@ -1,0 +1,25 @@
+[/]
+animate-appicon-hover-animation-extent={'RIPPLE': 4, 'PLANK': 4, 'SIMPLE': 1}
+appicon-margin=1
+appicon-padding=4
+dot-position='BOTTOM'
+dot-size=3
+dot-style-focused='DASHES'
+dot-style-unfocused='DASHES'
+extension-version=72
+focus-highlight=true
+focus-highlight-dominant=false
+focus-highlight-opacity=20
+global-border-radius=0
+hotkeys-overlay-combo='TEMPORARILY'
+panel-anchors='{"IVM-1156381642169":"MIDDLE","BOE-0x00000000":"MIDDLE","IVM-1130751924021":"MIDDLE","SAM-H4ZM103759":"MIDDLE","SAM-H4ZK407062":"MIDDLE"}'
+panel-element-positions='{}'
+panel-lengths='{"IVM-1130751924021":100,"IVM-1156381642169":100}'
+panel-positions='{}'
+panel-sizes='{"IVM-1156381642169":32,"BOE-0x00000000":29,"IVM-1130751924021":32,"SAM-H4ZM103759":29,"SAM-H4ZK407062":29}'
+prefs-opened=false
+trans-bg-color='#3d3846'
+trans-use-border=false
+trans-use-custom-bg=true
+trans-use-custom-gradient=false
+window-preview-title-position='TOP'
