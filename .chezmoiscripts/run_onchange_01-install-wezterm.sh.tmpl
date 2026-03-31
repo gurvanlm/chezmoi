@@ -30,9 +30,15 @@ if ! command -v wezterm &> /dev/null; then
         chmod +x ~/.local/bin/wezterm
         echo "WezTerm AppImage installed."
 
-        # Create .desktop file for AppImage
-        mkdir -p ~/.local/share/applications
-        cat > ~/.local/share/applications/org.wezfurlong.wezterm.desktop <<DESKTOP
+    fi
+fi
+
+# Create .desktop file if AppImage and no .desktop exists
+WEZTERM_DESKTOP="$HOME/.local/share/applications/org.wezfurlong.wezterm.desktop"
+if [ -f "$HOME/.local/bin/wezterm" ] && [ ! -f "$WEZTERM_DESKTOP" ]; then
+    echo "Creating WezTerm desktop entry..."
+    mkdir -p ~/.local/share/applications
+    cat > "$WEZTERM_DESKTOP" <<DESKTOP
 [Desktop Entry]
 Name=WezTerm
 Comment=Wez's Terminal Emulator
@@ -43,8 +49,7 @@ Categories=System;TerminalEmulator;
 StartupNotify=true
 StartupWMClass=org.wezfurlong.wezterm
 DESKTOP
-        update-desktop-database ~/.local/share/applications 2>/dev/null || true
-    fi
+    update-desktop-database ~/.local/share/applications 2>/dev/null || true
 fi
 
 # Set wezterm as default terminal emulator
