@@ -29,6 +29,21 @@ if ! command -v wezterm &> /dev/null; then
         curl -fsSL "$url" -o ~/.local/bin/wezterm
         chmod +x ~/.local/bin/wezterm
         echo "WezTerm AppImage installed."
+
+        # Create .desktop file for AppImage
+        mkdir -p ~/.local/share/applications
+        cat > ~/.local/share/applications/org.wezfurlong.wezterm.desktop <<DESKTOP
+[Desktop Entry]
+Name=WezTerm
+Comment=Wez's Terminal Emulator
+Exec=$HOME/.local/bin/wezterm
+Terminal=false
+Type=Application
+Categories=System;TerminalEmulator;
+StartupNotify=true
+StartupWMClass=org.wezfurlong.wezterm
+DESKTOP
+        update-desktop-database ~/.local/share/applications 2>/dev/null || true
     fi
 fi
 
