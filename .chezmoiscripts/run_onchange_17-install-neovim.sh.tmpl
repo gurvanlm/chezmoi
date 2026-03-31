@@ -5,9 +5,9 @@ set -euo pipefail
 if ! command -v nvim &> /dev/null; then
     echo "Installing Neovim..."
 
-    # Download latest release
-    url=$(curl -fsSL "https://api.github.com/repos/neovim/neovim/releases/latest" \
-        | grep "browser_download_url.*linux-x86_64.tar.gz\"" | head -1 | cut -d'"' -f4)
+    # Download Neovim 0.11.x (pin to 0.11 until treesitter config is migrated to 0.12)
+    url=$(curl -fsSL "https://api.github.com/repos/neovim/neovim/releases" \
+        | grep "browser_download_url.*linux-x86_64.tar.gz\"" | grep "v0\.11" | head -1 | cut -d'"' -f4)
 
     tmpdir=$(mktemp -d)
     curl -fsSL "$url" | tar xz -C "$tmpdir"
