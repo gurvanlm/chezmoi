@@ -61,8 +61,7 @@ fi
 
 # Set wezterm as default terminal for xdg-terminal-exec (used by Nautilus 48+)
 if ! command -v xdg-terminal-exec &> /dev/null; then
-    echo "Installing xdg-terminal-exec..."
-    sudo apt-get install -y xdg-terminal-exec
+    sudo apt-get install -y xdg-terminal-exec 2>/dev/null || true
 fi
 mkdir -p ~/.config
 if [ ! -f ~/.config/xdg-terminals.list ] || ! grep -q 'org.wezfurlong.wezterm.desktop' ~/.config/xdg-terminals.list; then
