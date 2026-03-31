@@ -10,8 +10,12 @@ fi
 
 if [ "$SHELL" != "$(which zsh)" ]; then
     echo "Setting zsh as default shell..."
-    sudo chsh -s "$(which zsh)" "{{ .chezmoi.username }}"
-    echo "Default shell changed to zsh. Log out and back in for it to take effect."
+    if getent passwd "{{ .chezmoi.username }}" &> /dev/null; then
+        sudo chsh -s "$(which zsh)" "{{ .chezmoi.username }}"
+        echo "Default shell changed to zsh. Log out and back in for it to take effect."
+    else
+        echo "User not in /etc/passwd (LDAP/AD?). Add 'exec zsh' to your .bashrc or change shell manually."
+    fi
 else
     echo "zsh is already the default shell."
 fi
