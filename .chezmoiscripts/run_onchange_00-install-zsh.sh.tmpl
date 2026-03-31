@@ -1,6 +1,6 @@
 {{- if .installZsh -}}
 #!/bin/bash
-set -euo pipefail
+set -eo pipefail
 
 if ! command -v zsh &> /dev/null; then
     echo "Installing zsh..."
@@ -8,14 +8,12 @@ if ! command -v zsh &> /dev/null; then
     sudo apt-get install -y zsh
 fi
 
-if [ "$SHELL" != "$(which zsh)" ]; then
+ZSH_PATH=$(command -v zsh || true)
+if [ -n "$ZSH_PATH" ] && [ "$SHELL" != "$ZSH_PATH" ]; then
     echo "Setting zsh as default shell..."
-    if getent passwd "{{ .chezmoi.username }}" &> /dev/null; then
-        sudo chsh -s "$(which zsh)" "{{ .chezmoi.username }}"
-        echo "Default shell changed to zsh. Log out and back in for it to take effect."
-    else
-        echo "User not in /etc/passwd (LDAP/AD?). Add 'exec zsh' to your .bashrc or change shell manually."
-    fi
+    sudo chsh -s "$ZSH_PATH" "{{ .chezmoi.username }}" 2>/dev/null || {
+        echo "chsh failed (user not in /etc/passwd?). Add 'exec zsh' to your .bashrc or change shell manually."
+    }
 else
     echo "zsh is already the default shell."
 fi
