@@ -33,12 +33,15 @@ if ! command -v wezterm &> /dev/null; then
 fi
 
 # Set wezterm as default terminal emulator
-if command -v update-alternatives &> /dev/null; then
+export PATH="$HOME/.local/bin:$PATH"
+WEZTERM_PATH=$(command -v wezterm 2>/dev/null || true)
+if [ -n "$WEZTERM_PATH" ] && command -v update-alternatives &> /dev/null; then
+    WEZTERM_PATH=$(readlink -f "$WEZTERM_PATH")
     current=$(update-alternatives --query x-terminal-emulator 2>/dev/null | grep "^Value:" | awk '{print $2}' || true)
-    if [ "$current" != "$(which wezterm)" ]; then
+    if [ "$current" != "$WEZTERM_PATH" ]; then
         echo "Setting wezterm as default terminal..."
-        sudo update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator "$(which wezterm)" 50
-        sudo update-alternatives --set x-terminal-emulator "$(which wezterm)"
+        sudo update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator "$WEZTERM_PATH" 50
+        sudo update-alternatives --set x-terminal-emulator "$WEZTERM_PATH"
     else
         echo "wezterm is already the default terminal."
     fi
