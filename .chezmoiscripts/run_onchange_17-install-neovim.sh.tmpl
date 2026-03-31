@@ -20,12 +20,4 @@ if ! command -v nvim &> /dev/null; then
 else
     echo "Neovim is already installed."
 fi
-
-# tree-sitter CLI (needed by nvim-treesitter to compile parsers)
-if ! command -v tree-sitter &> /dev/null; then
-    if command -v npm &> /dev/null; then
-        echo "Installing tree-sitter-cli..."
-        npm install -g tree-sitter-cli
-    fi
-fi
 {{- end }}
