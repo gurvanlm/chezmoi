@@ -23,3 +23,6 @@ __pycache__/
 dist/
 build/
 target/
+
+# Claude Code (réglages par machine, non versionnés)
+**/.claude/settings.local.json

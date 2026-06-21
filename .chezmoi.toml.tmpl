@@ -7,6 +7,8 @@
 {{- $installUv := promptBoolOnce . "installUv" "Install uv Python package manager (y/n)" -}}
 {{- $installTmux := promptBoolOnce . "installTmux" "Install tmux with plugins (y/n)" -}}
 {{- $installNeovim := promptBoolOnce . "installNeovim" "Install Neovim (y/n)" -}}
+{{- $installClaudeHistory := promptBoolOnce . "installClaudeHistory" "Install claude-history (TUI for Claude Code sessions) (y/n)" -}}
+{{- $installRtk := promptBoolOnce . "installRtk" "Install rtk (Rust Token Killer, Claude Code hook) (y/n)" -}}
 {{- $installSdkman := promptBoolOnce . "installSdkman" "Install SDKMAN + Java + Maven (y/n)" -}}
 {{- $nexusUser := promptStringOnce . "nexusUser" "Nexus username (leave empty to skip)" -}}
 {{- $nexusPassword := promptStringOnce . "nexusPassword" "Nexus password" -}}
@@ -41,6 +43,8 @@
     installUv = {{ $installUv }}
     installTmux = {{ $installTmux }}
     installNeovim = {{ $installNeovim }}
+    installClaudeHistory = {{ $installClaudeHistory }}
+    installRtk = {{ $installRtk }}
     installSdkman = {{ $installSdkman }}
     nexusUser = {{ $nexusUser | quote }}
     nexusPassword = {{ $nexusPassword | quote }}

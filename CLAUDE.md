@@ -95,6 +95,8 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 | 08 | **VS Code** | dépôt APT Microsoft | oui |
 | 09 | **Extensions VS Code** | `code --install-extension` | non |
 | 17 | **Neovim** + lazy.nvim + plugins | binaire GitHub → `~/.local/` | non |
+| 20 | **claude-history** (TUI sessions Claude Code, fuzzy search + resume) | tarball GitHub → `~/.local/bin/` (+ `lib/` onnxruntime) | non |
+| 21 | **rtk** (Rust Token Killer, proxy CLI branché en hook Claude Code) | tarball GitHub `rtk-ai/rtk` → `~/.local/bin/` | non |
 
 **Extensions VS Code** : Tokyo Night, Volar (Vue), Java, Java Debug, Maven, Rainbow CSV, Markdown Mermaid
 
@@ -135,7 +137,7 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 | `dot_config/yazi/theme.toml` | `~/.config/yazi/theme.toml` | Thème yazi Tokyo Night |
 | `dot_config/Code/User/settings.json` | `~/.config/Code/User/settings.json` | VS Code settings (Tokyo Night) |
 | `dot_config/nvim/` | `~/.config/nvim/` | Neovim config (lazy.nvim, Tokyo Night, plugins) |
-| `dot_claude/settings.json` | `~/.claude/settings.json` | Claude Code permissions |
+| `dot_claude/settings.json` | `~/.claude/settings.json` | Claude Code permissions + hook rtk (PreToolUse Bash) |
 | `dot_m2/settings.xml.tmpl` | `~/.m2/settings.xml` | Maven settings (Nexus credentials via template) |
 | `private_dot_ssh/private_config.tmpl` | `~/.ssh/config` | SSH config (GitHub, GitLab, serveurs) |
 | `dot_local/bin/executable_tools-update` | `~/.local/bin/tools-update` | Script de vérification/mise à jour des outils |

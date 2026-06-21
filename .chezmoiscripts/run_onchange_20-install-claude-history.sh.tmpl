@@ -1,0 +1,28 @@
+{{- if .installClaudeHistory -}}
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v claude-history &> /dev/null; then
+    echo "Installing claude-history..."
+    mkdir -p ~/.local/bin
+
+    url=$(curl -fsSL "https://api.github.com/repos/raine/claude-history/releases/latest" \
+        | grep "browser_download_url.*claude-history-linux-amd64.tar.gz\"" | head -1 | cut -d'"' -f4)
+
+    tmpdir=$(mktemp -d)
+    curl -fsSL "$url" | tar xz -C "$tmpdir"
+
+    # Binary + bundled onnxruntime libs (semantic search) — layout copied from upstream install.sh
+    install -m 755 "$tmpdir/claude-history" ~/.local/bin/claude-history
+    if [ -d "$tmpdir/lib" ]; then
+        mkdir -p ~/.local/bin/lib
+        cp -R "$tmpdir"/lib/. ~/.local/bin/lib/
+        ln -sf lib/libonnxruntime.so ~/.local/bin/libonnxruntime.so
+    fi
+    rm -rf "$tmpdir"
+
+    echo "claude-history installed."
+else
+    echo "claude-history is already installed."
+fi
+{{- end }}

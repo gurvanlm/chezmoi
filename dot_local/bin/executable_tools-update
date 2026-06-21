@@ -31,6 +31,8 @@ TOOLS=(
   "duf|duf --version|github|muesli/duf|tar:linux_x86_64.tar.gz"
   "glow|glow --version|github|charmbracelet/glow|tar:Linux_x86_64.tar.gz"
   "nvim|nvim --version|github|neovim/neovim|tar:linux-x86_64.tar.gz"
+  "claude-history|claude-history --version|github|raine/claude-history|tar:linux-amd64.tar.gz"
+  "rtk|rtk --version|github|rtk-ai/rtk|tar:x86_64-unknown-linux-musl.tar.gz"
   "gittyup|gittyup --version|github|Murmele/Gittyup|appimage"
   'obsidian|dpkg-query -W -f=\${Version} obsidian|github-deb|obsidianmd/obsidian-releases|deb:amd64.deb'
   'chatbox|dpkg-query -W -f=\${Version} xyz.chatboxapp.app|chatbox-site|chatboxai/chatbox|deb-site'
@@ -313,6 +315,19 @@ while IFS= read -r tool; do
       tmpdir=$(mktemp -d)
       curl -fsSL "$url" | tar xz -C "$tmpdir"
       cp -r "$tmpdir"/nvim-linux-x86_64/* ~/.local/
+      rm -rf "$tmpdir"
+      ;;
+    claude-history)
+      url=$(curl -fsSL "https://api.github.com/repos/raine/claude-history/releases/latest" \
+        | grep "browser_download_url.*claude-history-linux-amd64.tar.gz\"" | head -1 | cut -d'"' -f4)
+      tmpdir=$(mktemp -d)
+      curl -fsSL "$url" | tar xz -C "$tmpdir"
+      install -m 755 "$tmpdir/claude-history" ~/.local/bin/claude-history
+      if [ -d "$tmpdir/lib" ]; then
+        mkdir -p ~/.local/bin/lib
+        cp -R "$tmpdir"/lib/. ~/.local/bin/lib/
+        ln -sf lib/libonnxruntime.so ~/.local/bin/libonnxruntime.so
+      fi
       rm -rf "$tmpdir"
       ;;
     yazi)
