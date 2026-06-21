@@ -138,6 +138,10 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 | `dot_config/Code/User/settings.json` | `~/.config/Code/User/settings.json` | VS Code settings (Tokyo Night) |
 | `dot_config/nvim/` | `~/.config/nvim/` | Neovim config (lazy.nvim, Tokyo Night, plugins) |
 | `dot_claude/settings.json` | `~/.claude/settings.json` | Claude Code permissions + hook rtk (PreToolUse Bash) |
+| `dot_claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Instructions globales Claude (inclut RTK, env-tokens, feedback via `@`) |
+| `dot_claude/private_RTK.md` | `~/.claude/RTK.md` | Référence RTK (Rust Token Killer) |
+| `dot_claude/env-tokens.md` | `~/.claude/env-tokens.md` | Doc d'usage des tokens d'env (GITLAB_TOKEN, SONAR_TOKEN) — pas de valeurs |
+| `dot_claude/feedback.md` | `~/.claude/feedback.md` | Règles de travail Claude (pas de `git push`, descriptions de MR) |
 | `dot_m2/settings.xml.tmpl` | `~/.m2/settings.xml` | Maven settings (Nexus credentials via template) |
 | `private_dot_ssh/private_config.tmpl` | `~/.ssh/config` | SSH config (GitHub, GitLab, serveurs) |
 | `dot_local/bin/executable_tools-update` | `~/.local/bin/tools-update` | Script de vérification/mise à jour des outils |
