@@ -124,3 +124,9 @@ fi
 if command -v starship &> /dev/null; then
     eval "$(starship init zsh)"
 fi
+
+# Auto-tmux : picker de session (fzf) au lancement d'un terminal WezTerm
+if [[ -o interactive && -z "$TMUX" && "$TERM_PROGRAM" == "WezTerm" ]] \
+    && command -v tmux &> /dev/null && command -v tmux-sessionizer &> /dev/null; then
+    tmux-sessionizer
+fi

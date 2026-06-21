@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# tmux-sessionizer — picker TUI (fzf) pour s'attacher à une session tmux
+# existante ou en créer une nouvelle. Lancé au démarrage du shell WezTerm.
+
+set -euo pipefail
+
+# Déjà dans tmux → ne rien faire
+[ -n "${TMUX:-}" ] && exit 0
+
+sessions=$(tmux list-sessions -F '#{session_name}' 2>/dev/null || true)
+
+# Aucun serveur / aucune session → on démarre directement une session par défaut
+if [ -z "$sessions" ]; then
+    exec tmux new-session -s main
+fi
+
+new_label='  + new session'
+choice=$(printf '%s\n%s' "$sessions" "$new_label" \
+    | fzf --reverse --height=40% --prompt='tmux ❯ ' \
+          --header='Choisir une session (Échap = shell simple)')
+
+# Échap / annulation → on reste sur un shell normal
+[ -z "${choice:-}" ] && exit 0
+
+if [ "$choice" = "$new_label" ]; then
+    read -rp 'Nom de la session (vide = auto) : ' name
+    if [ -n "$name" ]; then
+        exec tmux new-session -s "$name"
+    else
+        exec tmux new-session
+    fi
+else
+    exec tmux attach-session -t "$choice"
+fi
