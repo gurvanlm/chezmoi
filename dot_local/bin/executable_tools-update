@@ -57,14 +57,18 @@ get_local_version() {
 }
 
 get_github_latest() {
-  local repo="$1"
-  local tag headers=""
-  # Use GitHub token if available to avoid rate limiting
+  local repo="$1" tag
+  # Use GitHub token if available (higher rate limit). GITHUB_TOKEN is
+  # unset upfront if it turned out to be invalid, so no eval / no bad-auth.
   if [ -n "${GITHUB_TOKEN:-}" ]; then
-    headers="-H \"Authorization: token $GITHUB_TOKEN\""
+    tag=$(curl -fsSL --max-time 10 -H "Authorization: token $GITHUB_TOKEN" \
+      "https://api.github.com/repos/${repo}/releases/latest" 2>/dev/null \
+      | grep '"tag_name"' | head -1 | cut -d'"' -f4)
+  else
+    tag=$(curl -fsSL --max-time 10 \
+      "https://api.github.com/repos/${repo}/releases/latest" 2>/dev/null \
+      | grep '"tag_name"' | head -1 | cut -d'"' -f4)
   fi
-  tag=$(eval curl -fsSL --max-time 10 $headers "https://api.github.com/repos/${repo}/releases/latest" 2>/dev/null \
-    | grep '"tag_name"' | head -1 | cut -d'"' -f4)
   normalize_version "$tag"
 }
 
@@ -175,6 +179,17 @@ install_uv() {
 echo -e "${BOLD}${BLUE}  tools-update${NC} — checking versions..."
 if [ -z "${GITHUB_TOKEN:-}" ]; then
   echo -e "${GRAY}  tip: export GITHUB_TOKEN=... to avoid API rate limits${NC}"
+else
+  # Validate the token once. If it is expired/invalid, GitHub answers 401 for
+  # every call and all GitHub tools would show "unknown". Fall back to
+  # anonymous access (60 req/h) and warn the user to renew the token.
+  http_code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 10 \
+    -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/rate_limit 2>/dev/null || true)
+  if [ "$http_code" != "200" ]; then
+    echo -e "${YELLOW}  ⚠ GITHUB_TOKEN invalide/expiré (HTTP ${http_code:-error}) — bascule en anonyme (60 req/h).${NC}"
+    echo -e "${GRAY}    Renouvelle le token puis mets à jour ~/.config/env-secrets.${NC}"
+    unset GITHUB_TOKEN
+  fi
 fi
 echo ""
 
