@@ -9,8 +9,27 @@ set -euo pipefail
 
 sessions=$(tmux list-sessions -F '#{session_name}' 2>/dev/null || true)
 
-# Aucun serveur / aucune session → on démarre directement une session par défaut
+# Serveur froid (aucune session). On restaure explicitement la dernière
+# sauvegarde tmux-resurrect AVANT de s'attacher, plutôt que de rester seul
+# dans 'main' : sinon l'autosave de continuum finit par écraser la bonne
+# sauvegarde avec un instantané à une seule session (perte de sessions).
 if [ -z "$sessions" ]; then
+    resurrect_last="${XDG_DATA_HOME:-$HOME/.local/share}/tmux/resurrect/last"
+    plugins="${TMUX_PLUGIN_MANAGER_PATH:-$HOME/.config/tmux/plugins}"
+    restore_script="$plugins/tmux-resurrect/scripts/restore.sh"
+
+    if [ -e "$resurrect_last" ] && [ -x "$restore_script" ]; then
+        tmux new-session -d -s _restore          # démarre le serveur (charge la config)
+        tmux run-shell "$restore_script" || true  # restauration synchrone des sessions
+        if [ "$(tmux list-sessions 2>/dev/null | grep -cv '^_restore:' || true)" -gt 0 ]; then
+            tmux kill-session -t _restore 2>/dev/null || true   # sessions restaurées : on jette le bootstrap
+        else
+            tmux rename-session -t _restore main 2>/dev/null || true  # rien à restaurer
+        fi
+        exec tmux attach
+    fi
+
+    # Aucune sauvegarde disponible → session par défaut
     exec tmux new-session -s main
 fi
 
