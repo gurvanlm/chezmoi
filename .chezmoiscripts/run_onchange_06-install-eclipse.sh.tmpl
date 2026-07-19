@@ -25,10 +25,16 @@ else
     echo "Eclipse installed in $ECLIPSE_DIR"
 fi
 
-# Symlink to PATH
-if [ ! -e "$HOME/.local/bin/eclipse" ]; then
-    ln -s "$ECLIPSE_DIR/eclipse" "$HOME/.local/bin/eclipse"
-fi
+# Wrapper on PATH: force the GTK X11 backend (Wayland/SWT quirks) and
+# propagate it to launched apps (run configs inherit this environment).
+mkdir -p "$HOME/.local/bin"
+rm -f "$HOME/.local/bin/eclipse"
+cat > "$HOME/.local/bin/eclipse" <<EOF
+#!/bin/bash
+export GDK_BACKEND=x11
+exec "$ECLIPSE_DIR/eclipse" "\$@"
+EOF
+chmod +x "$HOME/.local/bin/eclipse"
 
 # Desktop entry for GNOME
 mkdir -p "$(dirname "$ECLIPSE_DESKTOP")"
@@ -36,7 +42,7 @@ cat > "$ECLIPSE_DESKTOP" <<EOF
 [Desktop Entry]
 Name=Eclipse IDE
 Comment=Eclipse IDE for RCP/RAP Developers
-Exec=$ECLIPSE_DIR/eclipse
+Exec=env GDK_BACKEND=x11 $ECLIPSE_DIR/eclipse
 Icon=$ECLIPSE_DIR/icon.xpm
 Terminal=false
 Type=Application
