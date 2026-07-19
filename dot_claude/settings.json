@@ -18,10 +18,7 @@
       "Read(~/.claude/.credentials.json)"
     ]
   },
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  },
+  "includeCoAuthoredBy": false,
   "hooks": {
     "PreToolUse": [
       {
