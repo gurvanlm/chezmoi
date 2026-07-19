@@ -19,6 +19,9 @@
     ]
   },
   "includeCoAuthoredBy": false,
+  "model": "opus[1m]",
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
   "hooks": {
     "PreToolUse": [
       {
@@ -31,5 +34,9 @@
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
   }
 }

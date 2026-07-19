@@ -137,7 +137,8 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 | `dot_config/yazi/theme.toml` | `~/.config/yazi/theme.toml` | Thème yazi Tokyo Night |
 | `dot_config/Code/User/settings.json` | `~/.config/Code/User/settings.json` | VS Code settings (Tokyo Night) |
 | `dot_config/nvim/` | `~/.config/nvim/` | Neovim config (lazy.nvim, Tokyo Night, plugins) |
-| `dot_claude/settings.json` | `~/.claude/settings.json` | Claude Code permissions + hook rtk (PreToolUse Bash) |
+| `dot_claude/settings.json` | `~/.claude/settings.json` | Claude Code (permissions, modèle, hook rtk, statusLine) |
+| `dot_claude/executable_statusline.sh` | `~/.claude/statusline.sh` | Status line Tokyo Night (dossier, branche git, modèle, % contexte, % session 5h + reset) |
 | `dot_claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Instructions globales Claude (inclut RTK, env-tokens, feedback via `@`) |
 | `dot_claude/private_RTK.md` | `~/.claude/RTK.md` | Référence RTK (Rust Token Killer) |
 | `dot_claude/env-tokens.md` | `~/.claude/env-tokens.md` | Doc d'usage des tokens d'env (GITLAB_TOKEN, SONAR_TOKEN) — pas de valeurs |
