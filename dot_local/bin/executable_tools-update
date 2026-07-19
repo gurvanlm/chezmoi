@@ -174,6 +174,22 @@ install_uv() {
   curl -fsSL https://astral.sh/uv/install.sh | sh
 }
 
+# ── Usage ────────────────────────────────────────────────────────
+
+if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
+  cat <<'USAGE'
+tools-update — check and update locally-installed tools
+
+Usage:
+  tools-update              Interactive picker (fzf) to choose what to update
+  tools-update --check      List versions, report available updates, then exit
+  tools-update --all        Update every outdated tool (no prompt, scriptable)
+  tools-update <tool>...    Update only the named tools (no prompt, scriptable)
+  tools-update --help       Show this help
+USAGE
+  exit 0
+fi
+
 # ── Main: Check versions ─────────────────────────────────────────
 
 echo -e "${BOLD}${BLUE}  tools-update${NC} — checking versions..."
@@ -278,23 +294,56 @@ if [ "${1:-}" = "--check" ]; then
   exit 0
 fi
 
-# ── Interactive update ────────────────────────────────────────────
-
 if [ ${#UPDATABLE[@]} -eq 0 ]; then
   echo -e "${GREEN}All tools are up to date.${NC}"
   exit 0
 fi
 
-if ! command -v fzf &> /dev/null; then
-  echo -e "${RED}fzf is required for interactive selection. Run with --check for non-interactive mode.${NC}"
-  exit 1
+# ── Select what to update ────────────────────────────────────────
+# Default is the interactive fzf picker (needs a TTY). The two
+# non-interactive forms below (--all / named tools) need no fzf and
+# are scriptable (e.g. from cron).
+
+selected=""
+
+if [ "${1:-}" = "--all" ]; then
+  selected=$(printf '%s\n' "${UPDATABLE[@]}")
+elif [ $# -gt 0 ]; then
+  # Named tools: validate each against the known + outdated lists.
+  sel_arr=()
+  for arg in "$@"; do
+    known=false
+    for n in "${NAMES[@]}"; do
+      if [ "$n" = "$arg" ]; then known=true; break; fi
+    done
+    if ! $known; then
+      echo -e "${RED}  Unknown tool: ${arg}${NC}"
+      continue
+    fi
+    updatable=false
+    for u in "${UPDATABLE[@]}"; do
+      if [ "$u" = "$arg" ]; then updatable=true; break; fi
+    done
+    if ! $updatable; then
+      echo -e "${GRAY}  ${arg} is already up to date — skipped${NC}"
+      continue
+    fi
+    sel_arr+=("$arg")
+  done
+  if [ ${#sel_arr[@]} -gt 0 ]; then
+    selected=$(printf '%s\n' "${sel_arr[@]}")
+  fi
+else
+  # Interactive picker.
+  if ! command -v fzf &> /dev/null; then
+    echo -e "${RED}fzf is required for interactive selection. Use --check, --all, or pass tool names.${NC}"
+    exit 1
+  fi
+  echo -e "${CYAN}Select tools to update (TAB to select, ENTER to confirm):${NC}\n"
+  selected=$(printf '%s\n' "${UPDATABLE[@]}" | fzf --multi --prompt="Update: " \
+    --color=fg:#c0caf5,bg:#1a1b26,hl:#bb9af7,fg+:#c0caf5,bg+:#283457,hl+:#7aa2f7,info:#7aa2f7,prompt:#7dcfff,pointer:#7aa2f7,marker:#9ece6a,spinner:#9ece6a,header:#9ece6a \
+    --header="TAB to select, ENTER to confirm, ESC to cancel" || true)
 fi
-
-echo -e "${CYAN}Select tools to update (TAB to select, ENTER to confirm):${NC}\n"
-
-selected=$(printf '%s\n' "${UPDATABLE[@]}" | fzf --multi --prompt="Update: " \
-  --color=fg:#c0caf5,bg:#1a1b26,hl:#bb9af7,fg+:#c0caf5,bg+:#283457,hl+:#7aa2f7,info:#7aa2f7,prompt:#7dcfff,pointer:#7aa2f7,marker:#9ece6a,spinner:#9ece6a,header:#9ece6a \
-  --header="TAB to select, ENTER to confirm, ESC to cancel" || true)
 
 if [ -z "$selected" ]; then
   echo -e "${GRAY}No tools selected.${NC}"
@@ -316,11 +365,15 @@ while IFS= read -r tool; do
 
   echo -e "${BLUE}Updating ${BOLD}${tool}${NC}${BLUE}...${NC}"
 
+  # Isolate each update in a subshell so one failure doesn't abort the whole
+  # batch (set -e stays local to the subshell); report per-tool success/failure.
+  if ( set -e
   case "$tool" in
     starship)   install_starship ;;
     sheldon)    install_sheldon ;;
     zoxide)     install_zoxide ;;
     uv)         install_uv ;;
+    ripgrep)    install_github_tar "$repo" "rg" "${pattern#tar:}" ;;
     gittyup)    install_github_appimage "$repo" "gittyup" ;;
     chatbox)    install_chatbox_deb ;;
     obsidian)   install_github_deb "$repo" "amd64.deb" ;;
@@ -382,8 +435,11 @@ while IFS= read -r tool; do
       fi
       ;;
   esac
-
-  echo -e "${GREEN}  ✓ ${tool} updated${NC}"
+  ); then
+    echo -e "${GREEN}  ✓ ${tool} updated${NC}"
+  else
+    echo -e "${RED}  ✗ ${tool} failed — skipped${NC}"
+  fi
 done <<< "$selected"
 
 echo -e "\n${GREEN}${BOLD}Done!${NC} Restart your shell to use the updated tools."
