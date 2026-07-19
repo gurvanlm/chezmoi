@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# brain-note — sélecteur fuzzy d'une note du coffre Obsidian (~/brain).
+# Preview avec bat, ouvre la note choisie dans $EDITOR. Pensé pour un popup
+# tmux (bind b), mais utilisable seul en ligne de commande.
+set -euo pipefail
+
+cd "${BRAIN_DIR:-$HOME/brain}" || exit 1
+
+note=$(fd -e md . | fzf --preview 'bat --color=always {}') || exit 0
+[ -n "$note" ] && exec "${EDITOR:-nvim}" "$note"
