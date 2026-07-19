@@ -130,7 +130,7 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 | `dot_config/starship.toml` | `~/.config/starship.toml` | Prompt Tokyo Night (hostname SSH, Java) |
 | `dot_config/sheldon/plugins.toml` | `~/.config/sheldon/plugins.toml` | Plugins zsh |
 | `dot_config/wezterm/wezterm.lua` | `~/.config/wezterm/wezterm.lua` | Terminal (Tokyo Night, police, Shift+Enter) |
-| `dot_config/tmux/tmux.conf` | `~/.config/tmux/tmux.conf` | Tmux (Tokyo Night, Ctrl+Space prefix, plugins) |
+| `dot_config/tmux/tmux.conf` | `~/.config/tmux/tmux.conf` | Tmux (Tokyo Night, Ctrl+Space prefix, plugins, popups, bordures) |
 | `dot_config/lazygit/config.yml` | `~/.config/lazygit/config.yml` | Lazygit thème Tokyo Night |
 | `dot_config/git/ignore` | `~/.config/git/ignore` | Gitignore global (.env, node_modules, .idea...) |
 | `dot_config/bat/themes/` | `~/.config/bat/themes/` | Thème bat Tokyo Night |
@@ -146,6 +146,59 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 | `dot_m2/settings.xml.tmpl` | `~/.m2/settings.xml` | Maven settings (Nexus credentials via template) |
 | `private_dot_ssh/private_config.tmpl` | `~/.ssh/config` | SSH config (GitHub, GitLab, serveurs) |
 | `dot_local/bin/executable_tools-update` | `~/.local/bin/tools-update` | Script de vérification/mise à jour des outils |
+| `dot_local/bin/executable_tmux-sessionizer` | `~/.local/bin/tmux-sessionizer` | Picker fzf de session tmux + restauration resurrect au boot |
+| `dot_local/bin/executable_brain-note` | `~/.local/bin/brain-note` | Sélecteur fuzzy d'une note du coffre `~/brain` (fzf + preview bat) |
+
+## tmux — conventions & pièges
+
+Prefix : `Ctrl+Space`.
+
+### Nommage des sessions
+
+Les sessions sont **préfixées d'un index à deux chiffres** pour imposer un ordre
+d'affichage stable : outils transverses d'abord, puis les projets par ordre
+alphabétique.
+
+```
+01-MISC  02-BRAIN  03-Chezmoi  04-andromeda  05-badtreeps  06-COD3S …
+```
+
+- `choose-tree` trie **par activité par défaut, pas par nom** : le préfixe seul
+  ne suffit pas, d'où le `-O name` sur `prefix s` et `prefix w`.
+- Le zéro-padding évite que `10-` se classe entre `01-` et `02-`.
+- Les noms de sessions ne sont **pas** de la config : ils vivent dans la
+  sauvegarde tmux-resurrect, restaurée au boot par `tmux-sessionizer`. Après un
+  renommage, forcer une sauvegarde :
+  `~/.config/tmux/plugins/tmux-resurrect/scripts/save.sh`
+
+### Popups flottants (`display-popup`, built-in)
+
+Pour les outils « j'ouvre / je fais / je ferme », sans casser le layout :
+
+| Touche | Outil |
+|--------|-------|
+| `prefix g` | lazygit |
+| `prefix D` | lazydocker (`d` seul = detach, ne pas écraser) |
+| `prefix e` | yazi |
+| `prefix t` | btop |
+| `prefix Entrée` | shell scratch |
+| `prefix b` | notes du coffre `~/brain` (script `brain-note`) |
+
+La logique non triviale d'un popup va dans un **script de `dot_local/bin/`**
+(cf. `brain-note`) plutôt qu'inline dans `tmux.conf` : l'échappement
+`\$(...)` / `\${VAR}` y est fragile.
+
+### Pièges connus
+
+- **tokyo-night-tmux écrase certaines options** (ex. `pane-border-style`). Les
+  réglages qui doivent gagner sont placés **après l'init TPM**, en fin de fichier.
+- **`allow-passthrough on` + `update-environment TERM/TERM_PROGRAM`** sont requis
+  par yazi (previews) ; effet seulement au **ré-attach** du client.
+- **yazi en popup** affiche un bref « Terminal response timeout » : yazi sonde le
+  terminal et la réponse ne revient pas à travers la couche popup. Cosmétique
+  (yazi s'ouvre normalement), **aucune option yazi pour le désactiver** ;
+  passthrough et injection de l'identité `TERM_PROGRAM`/`WEZTERM_*` testés sans
+  effet. Assumé tel quel — ne pas re-creuser.
 
 ## Secrets Management
 
