@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# tmux-cheatsheet — antisèche des raccourcis tmux, affichée dans un popup
+# (prefix + ?). La logique vit ici plutôt que dans tmux.conf (échappement
+# fragile en inline). Couleurs Tokyo Night en truecolor ANSI.
+set -euo pipefail
+
+# ── Palette Tokyo Night ───────────────────────────────────────────
+esc=$'\033'
+blue="${esc}[38;2;122;162;247m"    # #7aa2f7  titres
+purple="${esc}[38;2;187;154;247m"  # #bb9af7  accent
+green="${esc}[38;2;158;206;106m"   # #9ece6a  ok
+yellow="${esc}[38;2;224;175;104m"  # #e0af68  touches
+cyan="${esc}[38;2;125;207;255m"    # #7dcfff  prefix
+red="${esc}[38;2;247;118;142m"     # #f7768e
+gray="${esc}[38;2;86;95;137m"      # #565f89  secondaire
+text="${esc}[38;2;192;202;245m"    # #c0caf5  texte
+bold="${esc}[1m"
+rst="${esc}[0m"
+
+# key <touche> <description> : ligne alignée
+key() { printf "   ${yellow}${bold}%-14s${rst} ${text}%s${rst}\n" "$1" "$2"; }
+sec() { printf "\n ${blue}${bold}%s${rst}\n" "$1"; }
+
+pager() { if command -v less >/dev/null; then less -R; else cat; fi; }
+
+{
+printf "\n ${purple}${bold}%s${rst}   ${gray}prefix = ${cyan}${bold}Ctrl+Space${rst}\n" "tmux — antisèche"
+printf " ${gray}%s${rst}\n" "────────────────────────────────────────────────────"
+
+sec "Sessions & fenêtres"
+key "s"          "sélecteur de sessions (trié par nom)"
+key "w"          "sélecteur de fenêtres (trié par nom)"
+key "c"          "nouvelle fenêtre (dans le dossier courant)"
+key "1-9"        "aller à la fenêtre N"
+key "n / p"      "fenêtre suivante / précédente"
+key "d"          "détacher la session (detach)"
+key "r"          "recharger la config tmux"
+key "Ctrl-r"    "restaurer les sessions (resurrect)"
+
+sec "Popups flottants"
+key "g"          "lazygit"
+key "D"          "lazydocker  (D majuscule ; d = detach)"
+key "e"          "yazi (explorateur de fichiers)"
+key "t"          "btop (moniteur système)"
+key "b"          "notes du coffre ~/brain"
+key "Entrée"     "shell scratch"
+key "F"          "fzf tmux (sessions/fenêtres/panes)"
+key "?"          "cette antisèche"
+
+sec "Panes — navigation & splits"
+key "| "         "split vertical   (côte à côte)"
+key "-"          "split horizontal (l'un sous l'autre)"
+key "h j k l"    "aller au pane gauche/bas/haut/droite"
+key "H J K L"    "redimensionner (répétable)"
+key "z"          "zoom / dézoom du pane"
+key "x"          "fermer le pane"
+key "Espace"     "cycler les layouts"
+
+sec "Copie (mode vi)"
+key "["          "entrer en copy-mode"
+key "v"          "début de sélection"
+key "y"          "copier + sortir"
+key "q"          "quitter le copy-mode"
+
+printf "\n ${gray}%s${rst}\n\n" "q pour fermer cette antisèche"
+} | pager
