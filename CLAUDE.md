@@ -148,6 +148,7 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 | `dot_local/bin/executable_tools-update` | `~/.local/bin/tools-update` | Script de vérification/mise à jour des outils |
 | `dot_local/bin/executable_tmux-sessionizer` | `~/.local/bin/tmux-sessionizer` | Picker fzf de session tmux + restauration resurrect au boot |
 | `dot_local/bin/executable_brain-note` | `~/.local/bin/brain-note` | Sélecteur fuzzy d'une note du coffre `~/brain` (fzf + preview bat) |
+| `dot_local/bin/executable_tmux-cheatsheet` | `~/.local/bin/tmux-cheatsheet` | Antisèche tmux (popup `prefix ?`, couleurs Tokyo Night) |
 
 ## tmux — conventions & pièges
 
@@ -183,10 +184,15 @@ Pour les outils « j'ouvre / je fais / je ferme », sans casser le layout :
 | `prefix t` | btop |
 | `prefix Entrée` | shell scratch |
 | `prefix b` | notes du coffre `~/brain` (script `brain-note`) |
+| `prefix ?` | antisèche des raccourcis (script `tmux-cheatsheet`) |
 
 La logique non triviale d'un popup va dans un **script de `dot_local/bin/`**
 (cf. `brain-note`) plutôt qu'inline dans `tmux.conf` : l'échappement
 `\$(...)` / `\${VAR}` y est fragile.
+
+`prefix ?` **surcharge** le `list-keys` par défaut de tmux. `prefix h` étant
+déjà pris (`select-pane -L`), l'aide est bindée sur `?` (touche « aide »
+naturelle). Le contenu de l'antisèche vit dans le script `tmux-cheatsheet`.
 
 ### Pièges connus
 
