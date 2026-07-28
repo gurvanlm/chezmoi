@@ -1,4 +1,5 @@
 {
+  "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
       "Bash",
@@ -18,10 +19,7 @@
       "Read(~/.claude/.credentials.json)"
     ]
   },
-  "includeCoAuthoredBy": false,
   "model": "opus[1m]",
-  "tui": "fullscreen",
-  "skipWorkflowUsageWarning": true,
   "hooks": {
     "PreToolUse": [
       {
@@ -35,6 +33,8 @@
       }
     ]
   },
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"

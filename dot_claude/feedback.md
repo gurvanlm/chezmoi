@@ -35,3 +35,24 @@ narrative; CI and reviewers handle validation. Such lines are noise in the MR.
 - Drop any "Validation" / "Build" / "Tests" section from MR bodies.
 - Keep describing what the change does and why; omit how it was verified locally.
 - Still run local builds when useful — just don't write about them in the MR.
+
+## Never publish Artifacts to claude.ai — preview locally
+
+When the user asks to "preview", "see", "open", or "render" a file (README,
+HTML, Markdown, diagram, etc.), render it **LOCALLY**. Do **NOT** use the
+`Artifact` tool — it publishes to **claude.ai** (external host, content may be
+cached/indexed even after deletion).
+
+**Why:** The user was explicit and surprised/upset when a README was pushed to
+claude.ai for a preview. They want previews to stay **on the local machine**;
+sending content off-box to claude.ai is a privacy problem, exactly like an
+unauthorized push.
+
+**How to apply:**
+- "preview" / "voir en local" / "ouvre-moi le README" → render locally: e.g.
+  `glow <file>` or `mdcat <file>` (terminal), or `pandoc <file> -o /tmp/x.html`
+  / a local markdown-to-HTML then open in the browser — check what's installed.
+- **Only** call the `Artifact` tool when the user *explicitly* asks for a
+  claude.ai artifact or a shareable link. When in doubt, ask first.
+- Treat this like [[never git push without authorization]]: content leaving the
+  local machine is a deliberate action the user must approve.

@@ -44,19 +44,37 @@ future task warrants it, suggest installing `glab` and configuring
 
 ## `SONAR_TOKEN`
 
-Authentication token for the internal **SonarQube** server.
+Authentication token for the internal **SonarQube** server
+(`https://sonarqube.edgemind.net`, version 26.4 as of 2026-07-28).
 
-Pair it with `SONAR_HOST_URL` (also typically set in CI variables, but may not
-be in your local shell — check before calling). Used by `mvn sonar:sonar`:
+`SONAR_HOST_URL` is a **CI-only** variable — it is *not* in the local shell,
+so pass the URL explicitly when calling from a dev machine.
+
+> ⚠️ **`mvn sonar:sonar` no longer works** — anywhere, CI or local. SonarSource
+> removed the `sonar` prefix alias that resolved via the legacy
+> `org.codehaus.mojo:sonar-maven-plugin` relocation; the entry disappeared from
+> the group `maven-metadata.xml` on Maven Central around 2026-07-24, and Maven
+> then fails with `No plugin found for prefix 'sonar'`. Declaring the plugin in
+> a pom does **not** fix it (verified on ibf: neither `build/plugins` nor
+> `pluginManagement`, neither root nor parent-pom — plugin prefixes resolve only
+> against the session's `pluginGroups`, which come from `settings.xml`).
+> Use **fully-qualified coordinates**, which is also what SonarSource's own docs
+> show first:
 
 ```bash
-mvn sonar:sonar -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.token=$SONAR_TOKEN
+mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.7.0.6970:sonar \
+    -Dsonar.host.url=https://sonarqube.edgemind.net -Dsonar.token=$SONAR_TOKEN
 ```
+
+> ⚠️ Running that locally **publishes a real analysis** to the shared project
+> and, without `-Dsonar.branch.name=<branch>`, overwrites the main branch's
+> analysis with the state of your working tree. Prefer the IDE extension in
+> connected mode for day-to-day feedback; let CI do the publishing.
 
 Or to query the Sonar web API directly:
 
 ```bash
-curl -sS -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/projects/search"
+curl -sS -u "$SONAR_TOKEN:" "https://sonarqube.edgemind.net/api/projects/search"
 ```
 
 ## Handling
