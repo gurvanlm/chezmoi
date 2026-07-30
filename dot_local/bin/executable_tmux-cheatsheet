@@ -29,6 +29,7 @@ printf " ${gray}%s${rst}\n" "─────────────────
 
 sec "Sessions & fenêtres"
 key "s"          "sélecteur de sessions (trié par nom)"
+key ": new -s …"  "créer une nouvelle session (invite de commande)"
 key "w"          "sélecteur de fenêtres (trié par nom)"
 key "c"          "nouvelle fenêtre (dans le dossier courant)"
 key ","          "renommer la fenêtre courante"
