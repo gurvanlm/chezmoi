@@ -1,0 +1,7 @@
+[Default Applications]
+x-scheme-handler/chatbox=xyz.chatboxapp.app.desktop
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop
+text/markdown=code.desktop
+
+[Added Associations]
+application/octet-stream=code.desktop;

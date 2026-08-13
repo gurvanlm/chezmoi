@@ -136,6 +136,7 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 | `dot_config/bat/themes/` | `~/.config/bat/themes/` | Thème bat Tokyo Night |
 | `dot_config/yazi/theme.toml` | `~/.config/yazi/theme.toml` | Thème yazi Tokyo Night |
 | `dot_config/Code/User/settings.json` | `~/.config/Code/User/settings.json` | VS Code settings (Tokyo Night) |
+| `dot_config/mimeapps.list` | `~/.config/mimeapps.list` | Associations MIME XDG (`.md` → VS Code, handlers chatbox/claude-cli) |
 | `dot_config/nvim/` | `~/.config/nvim/` | Neovim config (lazy.nvim, Tokyo Night, plugins) |
 | `dot_claude/settings.json` | `~/.claude/settings.json` | Claude Code (permissions, modèle, hook rtk, statusLine) |
 | `dot_claude/executable_statusline.sh` | `~/.claude/statusline.sh` | Status line Tokyo Night (dossier, branche git, modèle, % contexte, % session 5h + reset) |
