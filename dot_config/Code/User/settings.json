@@ -19,5 +19,8 @@
   "terminal.integrated.fontFamily": "'JetBrainsMono Nerd Font'",
   "window.titleBarStyle": "custom",
   "telemetry.telemetryLevel": "off",
-  "workbench.startupEditor": "none"
+  "workbench.startupEditor": "none",
+  "workbench.editorAssociations": {
+    "*.md": "vscode.markdown.preview.editor"
+  }
 }
