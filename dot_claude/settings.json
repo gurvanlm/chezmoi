@@ -33,10 +33,21 @@
       }
     ]
   },
-  "tui": "fullscreen",
-  "skipWorkflowUsageWarning": true,
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
+  },
+  "extraKnownMarketplaces": {
+    "compound-engineering-plugin": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/EveryInc/every-marketplace.git"
+      }
+    }
+  },
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
+  "enabledPlugins": {
+    "compound-engineering@compound-engineering-plugin": true
   }
 }
