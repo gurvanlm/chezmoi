@@ -49,6 +49,8 @@ key "b"          "notes du coffre ~/brain"
 key "Entrée"     "shell scratch"
 key "F"          "fzf tmux (sessions/fenêtres/panes)"
 key "?"          "cette antisèche"
+printf "   ${red}${bold}%-14s${rst} ${text}%s${rst}\n" \
+    "Ctrl+Maj+Échap" "débloquer un popup figé (touche WezTerm, sans prefix)"
 
 sec "Panes — navigation & splits"
 key "| "         "split vertical   (côte à côte)"

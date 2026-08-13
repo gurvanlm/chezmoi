@@ -32,6 +32,20 @@ config.enable_tab_bar = false
 config.keys = {
     -- Shift+Enter sends a real newline (for Claude Code multiline input)
     { key = 'Enter', mods = 'SHIFT', action = wezterm.action.SendString('\n') },
+
+    -- Ctrl+Shift+Escape : ferme un popup tmux bloqué.
+    -- Les touches d'un popup vont à son process, pas à tmux : si celui-ci
+    -- cesse de lire l'entrée, aucun raccourci tmux ne peut le fermer. WezTerm,
+    -- lui, intercepte le raccourci avant tmux — d'où le binding ici.
+    {
+        key = 'Escape',
+        mods = 'CTRL|SHIFT',
+        action = wezterm.action_callback(function()
+            wezterm.background_child_process({
+                wezterm.home_dir .. '/.local/bin/tmux-popup-close',
+            })
+        end),
+    },
 }
 
 return config

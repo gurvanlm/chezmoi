@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# tmux-popup-close — bouton panique : ferme tout popup tmux bloqué.
+#
+# Un popup (display-popup) appartient au *client*, pas à la session : les
+# touches partent directement au process du popup et le prefix n'y est pas
+# traité. Si ce process cesse de lire l'entrée, plus rien ne ferme le popup
+# depuis l'intérieur — ni prefix, ni q, ni Ctrl-C.
+#
+# La commande `display-popup -C` agit depuis l'extérieur et ne ferme *que* les
+# popups : aucune fenêtre, aucun pane, aucun process de la session n'est touché.
+#
+# Appelé par la touche Ctrl+Shift+Échap de WezTerm (cf. wezterm.lua), qui
+# intercepte le raccourci avant tmux — c'est ce qui le rend fiable même quand
+# tmux ne répond plus. Utilisable aussi à la main depuis un autre terminal.
+set -euo pipefail
+
+# Pas de serveur tmux → rien à faire.
+tmux has-session 2>/dev/null || exit 0
+
+tmux list-clients -F '#{client_tty}' | while read -r tty; do
+    [ -n "$tty" ] || continue
+    tmux display-popup -C -c "$tty" 2>/dev/null || true
+done

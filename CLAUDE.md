@@ -150,6 +150,7 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 | `dot_local/bin/executable_tmux-sessionizer` | `~/.local/bin/tmux-sessionizer` | Picker fzf de session tmux + restauration resurrect au boot |
 | `dot_local/bin/executable_brain-note` | `~/.local/bin/brain-note` | Sélecteur fuzzy d'une note du coffre `~/brain` (fzf + preview bat) |
 | `dot_local/bin/executable_tmux-cheatsheet` | `~/.local/bin/tmux-cheatsheet` | Antisèche tmux (popup `prefix ?`, couleurs Tokyo Night) |
+| `dot_local/bin/executable_tmux-popup-close` | `~/.local/bin/tmux-popup-close` | Ferme les popups tmux bloqués (bouton panique WezTerm `Ctrl+Maj+Échap`) |
 
 ## tmux — conventions & pièges
 
@@ -194,6 +195,24 @@ La logique non triviale d'un popup va dans un **script de `dot_local/bin/`**
 `prefix ?` **surcharge** le `list-keys` par défaut de tmux. `prefix h` étant
 déjà pris (`select-pane -L`), l'aide est bindée sur `?` (touche « aide »
 naturelle). Le contenu de l'antisèche vit dans le script `tmux-cheatsheet`.
+
+### Popup bloqué — bouton panique
+
+Un popup appartient au **client**, pas à la session : les touches partent
+directement au process du popup et le prefix n'y est **pas** traité. Si ce
+process cesse de lire l'entrée, plus rien ne ferme le popup depuis l'intérieur
+(ni prefix, ni `q`, ni `Ctrl-C`) — aucun binding tmux ne peut servir de secours.
+
+La parade vit donc **au-dessus de tmux**, dans WezTerm, qui intercepte le
+raccourci avant lui : `Ctrl+Maj+Échap` → script `tmux-popup-close`.
+
+```bash
+tmux display-popup -C -c /dev/pts/N   # -C ferme les popups du client N
+```
+
+`-C` ne touche **que** les popups : aucune fenêtre, aucun pane, aucun process
+de la session n'est affecté. Le script boucle sur tous les clients ; il reste
+utilisable à la main depuis n'importe quel autre terminal.
 
 ### Pièges connus
 
