@@ -1,0 +1,80 @@
+#!/bin/bash
+# Génère ~/.claude/settings.json : la base versionnée ci-dessous l'emporte sur
+# les clés qu'elle définit, et les clés présentes seulement en local sont
+# conservées (notamment autoMode, qui décrit l'infra Edgemind et ne doit pas
+# partir sur GitHub).
+set -euo pipefail
+
+current=$(cat)
+if ! printf '%s' "$current" | jq -e 'type == "object"' > /dev/null 2>&1; then
+    current='{}'
+fi
+
+base=$(cat <<'JSON'
+{
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "deny": [
+      "Bash(git push *)",
+      "Bash(git push)",
+      "Bash(rm -rf *)",
+      "Bash(sudo *)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(~/.claude/.credentials.json)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/no-assistant-trailer.sh",
+            "statusMessage": "Vérification du message git…"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
+  "enabledPlugins": {
+    "compound-engineering@compound-engineering-plugin": true
+  },
+  "extraKnownMarketplaces": {
+    "compound-engineering-plugin": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/EveryInc/every-marketplace.git"
+      }
+    }
+  },
+  "feedbackDrafts": "off",
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true
+}
+JSON
+)
+
+jq -n --argjson current "$current" --argjson base "$base" '$current * $base'

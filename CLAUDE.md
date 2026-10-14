@@ -139,7 +139,8 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 | `dot_config/Code/User/settings.json` | `~/.config/Code/User/settings.json` | VS Code settings (Tokyo Night) |
 | `dot_config/mimeapps.list` | `~/.config/mimeapps.list` | Associations MIME XDG (`.md` → VS Code, handlers chatbox/claude-cli) |
 | `dot_config/nvim/` | `~/.config/nvim/` | Neovim config (lazy.nvim, Tokyo Night, plugins) |
-| `dot_claude/settings.json` | `~/.claude/settings.json` | Claude Code (permissions, modèle, hook rtk, statusLine) |
+| `dot_claude/modify_settings.json` | `~/.claude/settings.json` | Claude Code (permissions, hooks rtk + anti-trailer, statusLine). Script `modify_` : base versionnée fusionnée avec le fichier local, dont les clés locales (`autoMode`, infra Edgemind) ne sont **jamais** versionnées |
+| `dot_claude/hooks/executable_no-assistant-trailer.sh` | `~/.claude/hooks/no-assistant-trailer.sh` | Hook PreToolUse : refuse un message git portant une attribution à l'assistant |
 | `dot_claude/executable_statusline.sh` | `~/.claude/statusline.sh` | Status line Tokyo Night (dossier, branche git, modèle, % contexte, % session 5h + reset) |
 | `dot_claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Instructions globales Claude (inclut RTK, env-tokens, feedback via `@`) |
 | `dot_claude/private_RTK.md` | `~/.claude/RTK.md` | Référence RTK (Rust Token Killer) |
