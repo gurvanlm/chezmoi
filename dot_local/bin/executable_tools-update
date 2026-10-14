@@ -40,6 +40,7 @@ TOOLS=(
   'vscode|dpkg-query -W -f=\${Version} code|apt|code|'
   'dbeaver|dpkg-query -W -f=\${Version} dbeaver-ce|apt|dbeaver-ce|'
   "tmux|tmux -V|apt|tmux|"
+  'steam|dpkg-query -W -f=\${Version} steam-launcher|apt|steam-launcher|'
 )
 
 # ── Helper functions ──────────────────────────────────────────────
@@ -420,7 +421,7 @@ while IFS= read -r tool; do
       chmod +x ~/.local/bin/btop
       rm -rf "$tmpdir"
       ;;
-    docker|vscode|dbeaver|tmux)
+    docker|vscode|dbeaver|tmux|steam)
       install_apt "$repo"
       ;;
     *)

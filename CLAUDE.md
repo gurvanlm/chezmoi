@@ -38,7 +38,7 @@ Les scripts d'installation sont sélectifs : l'utilisateur choisit quoi installe
 - Chaque script est un `run_onchange_XX-install-<nom>.sh.tmpl` conditionné par `{{- if .<variable> }}...{{- end }}`
 - Quand la variable est `false`, le template rend un contenu vide → chezmoi ne l'exécute pas
 - Cibles : Debian/Ubuntu (serveur et desktop)
-- Les outils desktop (wezterm, vscode, eclipse, obsidian, dbeaver, chatbox, gittyup) sont conditionnés à la présence d'une session graphique (XDG_SESSION_TYPE ou DISPLAY)
+- Les outils desktop (wezterm, vscode, eclipse, obsidian, dbeaver, chatbox, gittyup, steam) sont conditionnés à la présence d'une session graphique (XDG_SESSION_TYPE ou DISPLAY)
 
 **Pour ajouter un nouveau script d'installation :**
 1. Ajouter un `promptBoolOnce` dans `.chezmoi.toml.tmpl`
@@ -114,6 +114,7 @@ Binaires GitHub dans `~/.local/bin/` (sans sudo) + quelques paquets apt :
 | 14 | **ChatBox** (AI client) | .deb depuis chatboxai.app | oui |
 | 15 | **Gittyup** (git GUI) | AppImage GitHub → `~/.local/bin/` | non |
 | 16 | **tmux** + TPM + plugins | apt + git clone | oui |
+| 22 | **Steam** (+ arch i386, libs 32 bits, Mesa) | .deb officiel Valve (ajoute le dépôt repo.steampowered.com) | oui |
 
 ### Post-install
 | Script | Action |

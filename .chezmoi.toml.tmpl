@@ -21,6 +21,7 @@
 {{- $installChromium := false -}}
 {{- $installDashToPanel := false -}}
 {{- $installEclipse := false -}}
+{{- $installSteam := false -}}
 {{- if or (eq (env "XDG_SESSION_TYPE") "wayland") (eq (env "XDG_SESSION_TYPE") "x11") (ne (env "DISPLAY") "") -}}
 {{-   $installWezterm = promptBoolOnce . "installWezterm" "Install wezterm and set as default terminal (y/n)" -}}
 {{-   $installVscode = promptBoolOnce . "installVscode" "Install VS Code (y/n)" -}}
@@ -31,6 +32,7 @@
 {{-   $installChromium = promptBoolOnce . "installChromium" "Install Chromium browser (y/n)" -}}
 {{-   $installDashToPanel = promptBoolOnce . "installDashToPanel" "Install GNOME Dash to Panel extension (y/n)" -}}
 {{-   $installEclipse = promptBoolOnce . "installEclipse" "Install Eclipse IDE for RCP/RAP developers (y/n)" -}}
+{{-   $installSteam = promptBoolOnce . "installSteam" "Install Steam (y/n)" -}}
 {{- end -}}
 
 [data]
@@ -57,3 +59,4 @@
     installChromium = {{ $installChromium }}
     installDashToPanel = {{ $installDashToPanel }}
     installEclipse = {{ $installEclipse }}
+    installSteam = {{ $installSteam }}

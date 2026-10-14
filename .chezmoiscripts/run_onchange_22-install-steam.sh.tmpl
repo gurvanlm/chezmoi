@@ -1,0 +1,29 @@
+{{- if .installSteam -}}
+#!/bin/bash
+set -euo pipefail
+
+# Steam needs 32-bit libraries: enable the i386 architecture first
+if ! dpkg --print-foreign-architectures | grep -qx i386; then
+    echo "Enabling i386 architecture..."
+    sudo dpkg --add-architecture i386
+fi
+
+if ! dpkg -s steam-launcher &> /dev/null; then
+    echo "Installing Steam..."
+
+    # Official Valve package: also adds the repo.steampowered.com APT repository
+    tmpdir=$(mktemp -d)
+    curl -fsSL -o "$tmpdir/steam.deb" https://cdn.fastly.steamstatic.com/client/installer/steam.deb
+    sudo apt-get install -y "$tmpdir/steam.deb"
+    rm -rf "$tmpdir"
+
+    echo "Steam installed."
+else
+    echo "Steam is already installed."
+fi
+
+# 32-bit runtime + Mesa drivers (OpenGL/Vulkan), otherwise Steam asks for them at first launch
+sudo apt-get update -qq
+sudo apt-get install -y steam-libs-amd64 steam-libs-i386 \
+    libgl1-mesa-dri:i386 libglx-mesa0:i386 mesa-vulkan-drivers mesa-vulkan-drivers:i386
+{{- end }}
