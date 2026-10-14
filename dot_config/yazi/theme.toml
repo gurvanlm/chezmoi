@@ -124,11 +124,10 @@ icon_info = ""
 
 # Help
 [help]
-on      = { fg = "#9ece6a" }
-run     = { fg = "#bb9af7" }
-desc    = { fg = "#7dcfff" }
+border  = { fg = "#7aa2f7" }
+chord   = { fg = "#9ece6a" }
+action  = { fg = "#bb9af7" }
 hovered = { bg = "#292e42" }
-footer  = { fg = "#c0caf5", bg = "#1a1b26" }
 
 [filetype]
 
