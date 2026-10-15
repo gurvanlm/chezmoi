@@ -59,17 +59,6 @@ base=$(cat <<'JSON'
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
-  "enabledPlugins": {
-    "compound-engineering@compound-engineering-plugin": true
-  },
-  "extraKnownMarketplaces": {
-    "compound-engineering-plugin": {
-      "source": {
-        "source": "git",
-        "url": "https://github.com/EveryInc/every-marketplace.git"
-      }
-    }
-  },
   "feedbackDrafts": "off",
   "tui": "fullscreen",
   "skipWorkflowUsageWarning": true
