@@ -228,6 +228,39 @@ utilisable à la main depuis n'importe quel autre terminal.
   passthrough et injection de l'identité `TERM_PROGRAM`/`WEZTERM_*` testés sans
   effet. Assumé tel quel — ne pas re-creuser.
 
+## Docker — stockage déporté sur `/home`
+
+La racine `/` est une petite partition LVM (55 Go) séparée de `/home` (850 Go).
+Le stockage Docker vit donc **hors de `/`**, mais cela demande **deux réglages
+distincts**, pas un seul :
+
+| Fichier (hors chezmoi, sous `/etc`) | Clé | Valeur |
+|---|---|---|
+| `/etc/docker/daemon.json` | `data-root` | `/home/docker` |
+| `/etc/containerd/config.toml` | `root` | `/home/containerd` |
+
+⚠️ **Le `data-root` de Docker ne suffit pas depuis Docker 29.** Le moteur utilise
+désormais le *containerd image store* (`Storage Driver: overlayfs`,
+`driver-type: io.containerd.snapshotter.v1`) : les **couches d'images** ne sont
+plus sous `data-root` mais sous le `root` de **containerd**, qui est un service
+séparé avec sa propre config. Déporter seulement `data-root` laisse donc le plus
+gros sur `/` — c'était le cas ici : 31 Go dans `/var/lib/containerd` (24 Go de
+snapshots overlayfs + 6,8 Go de blobs) pendant que `/` saturait à 91 %.
+
+Symptôme de diagnostic : un écart massif entre `df` (utilisé réel) et
+`du -xhd1 /` lancé **sans sudo** — `/var/lib/containerd` est en `0700 root:root`,
+donc invisible pour l'utilisateur. Toujours refaire le `du` en root.
+
+Pour une migration, la copie **doit** se faire en `rsync -aHAX` : `-X` porte
+l'attribut étendu `trusted.overlay.opaque` des répertoires « opaques » du
+snapshotter. Sans lui, la copie réussit sans erreur mais les images sont
+**silencieusement corrompues**. Et `docker images` ne le détecte pas (il ne lit
+que des métadonnées) : seul un `docker run` réel monte l'overlay et valide.
+
+Note : `containerd config dump` émet un `WARN Configuration migrated from
+version 0` — préexistant, dû à l'absence de `version = 3` dans le fichier livré
+par le paquet Docker. Bénin, sans rapport avec la clé `root`.
+
 ## Secrets Management
 
 Les secrets ne sont pas versionnés dans git :
